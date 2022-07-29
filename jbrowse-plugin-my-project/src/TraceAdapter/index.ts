@@ -1,1 +1,1 @@
-export { default as AdapterClass } from './TraceAdapter'
+export { default as AdapterClass } from './TracesAdapter'

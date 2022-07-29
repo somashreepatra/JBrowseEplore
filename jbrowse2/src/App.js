@@ -124,7 +124,8 @@ const defaultSession = {
               "configuration": "nextstrain-color-display"
             }
           ]
-        }, {
+        }, 
+        {
           "type": "FeatureTrack",
           "configuration": "electropherogram-annotations",
           "displays": [

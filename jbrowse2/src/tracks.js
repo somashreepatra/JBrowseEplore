@@ -247,7 +247,7 @@ const tracks = [
     "assemblyNames": ["SARS-CoV-2"],
     "category": ["Annotation"],
     "adapter": {
-      "type": "FromConfigAdapter",
+      "type": "FromConfigAdapter", //FromConfigAdapter
       "features": [
         {
           "refName": "SARS-CoV-2",
@@ -366,7 +366,8 @@ const tracks = [
     "category": ["Annotation"],
     "adapter": {
       "type": "TracesAdapter",
-      "features": [
+      "features": 
+      [
         {
                       "refName": "SARS-CoV-2",
                       "name": "E",
@@ -384,7 +385,8 @@ const tracks = [
                       "fill": "#E59637"
                     },
       ]
-    },"displays": [
+    }
+    ,"displays": [
       {
         "type": "LinearBasicDisplay",
         "displayId": "traces-color-display",
