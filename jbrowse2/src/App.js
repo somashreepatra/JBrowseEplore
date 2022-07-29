@@ -127,12 +127,12 @@ const defaultSession = {
         }, {
           "type": "FeatureTrack",
           "configuration": "electropherogram-annotations",
-          // "displays": [
-          //   {
-          //     "type": "LinearBasicDisplay",
-          //     "configuration": "basicv1-color-display"
-          //   }
-          // ]
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "traces-color-display"
+            }
+          ]
           
         }
       ]
@@ -225,7 +225,7 @@ function App() {
       //   //"url": "http://localhost:8002/bundle.js"
       // }],
       //location: '10:29,838,655..29,838,737',
-      //"location": "SARS-CoV-2:14,936..14,968",
+      "location": "SARS-CoV-2:14,936..14,968",
       // onChange: (patch) => {
       //   setPatches((previous) => previous + JSON.stringify(patch) + '\n')
       // },

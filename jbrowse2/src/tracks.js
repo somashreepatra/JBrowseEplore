@@ -358,17 +358,43 @@ const tracks = [
       }
     ]
   }, 
-  // {
-  //   "type": "FeatureTrack",
-  //   "name": "Electropherogram",
-  //   "trackId": "electropherogram-annotations",
-  //   "assemblyNames": ["SARS-CoV-2"],
-  //   "category": ["Annotation"],
-  //   "adapter": {
-  //     "type": "TracesAdapter",
-  //     "features": []
-  //   }
-  // }
+  {
+    "type": "FeatureTrack",
+    "name": "Electropherogram",
+    "trackId": "electropherogram-annotations",
+    "assemblyNames": ["SARS-CoV-2"],
+    "category": ["Annotation"],
+    "adapter": {
+      "type": "TracesAdapter",
+      "features": [
+        {
+                      "refName": "SARS-CoV-2",
+                      "name": "E",
+                      "uniqueId": 4,
+                      "start": 26244,
+                      "end": 26472,
+                      "fill": "#D9AD3D"
+                    },
+                    {
+                      "refName": "SARS-CoV-2",
+                      "name": "Sample_NA12835_spec.ab1",
+                      "uniqueId": 1,
+                      "start": 14940,
+                      "end": 14950,
+                      "fill": "#E59637"
+                    },
+      ]
+    },"displays": [
+      {
+        "type": "LinearBasicDisplay",
+        "displayId": "traces-color-display",
+        "renderer": {
+          "type": "SvgFeatureRenderer",
+          "color1": "jexl:get(feature,'fill') || 'black'"
+        }
+      }
+    ]
+  }
 ];
   
   export default tracks

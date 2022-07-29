@@ -74,7 +74,7 @@ export default class TracesPlugin extends Plugin {
     pluginManager.addAdapterType(
       () =>
         {
-          console.log("INSIDE ADD ADAPTER")
+          console.log("INSIDE ADD ADAPTER NEW ")
         return new AdapterType({
           name: 'TracesAdapter',
           configSchema: configSchema,
@@ -92,15 +92,5 @@ export default class TracesPlugin extends Plugin {
         })
       }
     )
-
-    
-        pluginManager.addViewType(() => {
-          console.log("VIEW TYPE");
-      return new ViewType({
-        name: 'HelloView',
-        stateModel: helloViewStateModel,
-        ReactComponent: HelloViewReactComponent,
-      })
-    })
   }
 }
