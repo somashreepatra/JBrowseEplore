@@ -241,6 +241,124 @@
 
 const tracks = [
   {
+    trackId: 'testConfig',
+    assemblyNames: ["SARS-CoV-2"],
+    name: 'Foo Track',
+    type: 'BasicTrack',
+    adapter: { type: 'FromConfigAdapter', features: [
+      {
+        "refName": "SARS-CoV-2",
+        "name": "A",
+        "uniqueId": 3,
+        "start": 14939,
+        "end": 14939,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "T",
+        "uniqueId": 4,
+        "start": 14940,
+        "end": 14940,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "C",
+        "uniqueId": 5,
+        "start": 14941,
+        "end": 14941,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "A",
+        "uniqueId": 6,
+        "start": 14942,
+        "end": 14942,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "G",
+        "uniqueId": 7,
+        "start": 14943,
+        "end": 14943,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "C",
+        "uniqueId": 8,
+        "start": 14944,
+        "end": 14944,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "T",
+        "uniqueId": 9,
+        "start": 14945,
+        "end": 14945,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "G",
+        "uniqueId": 10,
+        "start": 14946,
+        "end": 14946,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "G",
+        "uniqueId": 11,
+        "start": 14947,
+        "end": 14947,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "T",
+        "uniqueId": 12,
+        "start": 14948,
+        "end": 14948,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "T",
+        "uniqueId": 13,
+        "start": 14949,
+        "end": 14949,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "T",
+        "uniqueId": 14,
+        "start": 14950,
+        "end": 14950,
+        "fill": "#D9AD3D"
+      },
+      {
+        "refName": "SARS-CoV-2",
+        "name": "T",
+        "uniqueId": 15,
+        "start": 14951,
+        "end": 14951,
+        "fill": "#D9AD3D"
+      },
+    ] },
+    displays: [
+      {
+        type: "LinearBasicDisplay",
+        displayId: "testDisplay"
+      }
+    ]
+  },
+  {
     "type": "FeatureTrack",
     "name": "Traces",
     "trackId": "nextstrain-annotations",

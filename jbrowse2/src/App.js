@@ -94,6 +94,17 @@ const defaultSession = {
             }
           ]
         },
+
+        {
+          type: "BasicTrack",
+          configuration: "testConfig",
+          displays: [
+            {
+              type: "LinearBasicDisplay",
+              configuration: "testDisplay"
+            }
+          ]
+        },
         // {
         //   "type": "QuantitativeTrack",
         //   "configuration": "entropy-score",
