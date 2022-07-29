@@ -1,0 +1,8 @@
+{
+  "plugins": [
+    {
+      "name": "Traces",
+      "url": "http://localhost:8999/dist/jbrowse-plugin-traces.umd.development.js"
+    }
+  ]
+}
