@@ -60,12 +60,28 @@ import AdapterType from "@jbrowse/core/pluggableElementTypes/AdapterType";
 import Plugin from "@jbrowse/core/Plugin";
 import {configSchema} from "./TraceAdapter/configSchema";
 import PluginManager from '@jbrowse/core/PluginManager'
-import {
-  ReactComponent as HelloViewReactComponent,
-  stateModel as helloViewStateModel,
-} from './HelloView'
-import ViewType from '@jbrowse/core/pluggableElementTypes/ViewType'
 import TracesAdapter from "./TraceAdapter/TracesAdapter";
+import {
+  configSchema as traceSequenceConfigSchema,
+  ReactComponent as TraceSequenceRenderingComponent,
+} from './TraceRenderer';
+
+import traceConfigSchema from './TraceRenderer/configSchema';
+import FeatureRendererType from "@jbrowse/core/pluggableElementTypes/renderers/FeatureRendererType";
+import { Region } from "@jbrowse/core/util/types";
+
+class TraceSequenceRenderer extends FeatureRendererType {
+  supportsSVG = true
+
+  getExpandedRegion(region: Region) {
+    return {
+      ...region,
+      start: Math.max(region.start - 3, 0),
+      end: region.end + 3,
+    }
+  }
+}
+
 export default class TracesPlugin extends Plugin {
   name = 'TracesPlugin'
 
@@ -78,10 +94,6 @@ export default class TracesPlugin extends Plugin {
         return new AdapterType({
           name: 'TracesAdapter',
           configSchema: configSchema,
-          // getAdapterClass: () =>
-          //   import('./TraceAdapter/TracesAdapter').then(
-          //     r => r.default,
-          //   ),
           adapterMetadata: {
             category: null,
             hiddenFromGUI: true,
@@ -91,6 +103,16 @@ export default class TracesPlugin extends Plugin {
           AdapterClass: TracesAdapter,
         })
       }
+    )
+    pluginManager.addRendererType(
+      () =>
+        new TraceSequenceRenderer({
+          name: 'TraceSequenceRenderer',
+          ReactComponent: TraceSequenceRenderingComponent,
+          configSchema: traceConfigSchema,
+         // traceSequenceConfigSchema,
+          pluginManager
+        }),
     )
   }
 }
