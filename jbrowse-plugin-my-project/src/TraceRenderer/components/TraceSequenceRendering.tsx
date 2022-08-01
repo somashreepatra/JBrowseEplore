@@ -67,6 +67,7 @@ function Electropherogram(props: {
     bpPerPx,
   )
 
+  
   return (
     <>
       {
@@ -77,7 +78,7 @@ function Electropherogram(props: {
           <React.Fragment key={index}>
             <g>
               <path
-                d={`M ${left} 0 C ${left} ${height}, ${right} ${height}, ${right} 0`}
+                d={`M ${left} 25 C ${left} ${height}, ${right} ${height}, ${right} 0`}
                 stroke={stroke}
                 strokeWidth={strokeWidth}
                 fill="transparent"
@@ -193,12 +194,14 @@ const SequenceSVG = ({
           bpPerPx={bpPerPx}
           theme={theme}
         />
-        {/* <Electropherogram height={height}
+        {
+          <Electropherogram height={height}
           y={(currY += 20)}
           feature={feature}
           region={region}
           bpPerPx={bpPerPx}
-          theme={theme} config={config}></Electropherogram> */}
+          theme={theme} config={config}></Electropherogram>
+        }
     </>
   )
   

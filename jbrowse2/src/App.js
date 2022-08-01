@@ -94,17 +94,6 @@ const defaultSession = {
             }
           ]
         },
-
-        {
-          type: "BasicTrack",
-          configuration: "testConfig",
-          displays: [
-            {
-              type: "LinearBasicDisplay",
-              configuration: "testDisplay"
-            }
-          ]
-        },
         // {
         //   "type": "QuantitativeTrack",
         //   "configuration": "entropy-score",
@@ -135,8 +124,7 @@ const defaultSession = {
               "configuration": "nextstrain-color-display"
             }
           ]
-        }, 
-        {
+        }, {
           "type": "FeatureTrack",
           "configuration": "electropherogram-annotations",
           "displays": [
@@ -146,59 +134,36 @@ const defaultSession = {
             }
           ]
           
+        },  {
+          "type": "FeatureTrack",
+          "configuration": "seq-annotations",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "seq-color-display",
+              showForward: true,
+              showReverse: false,
+              showTranslation: false,
+              height: 180,
+            }
+          ]
         }
+
+        
+        // {
+        //   "type": "ReferenceSequenceTrack",
+        //   "configuration": "sequence-annotations",
+        //   "displays": [
+        //     {
+        //       "type": "LinearBasicDisplay",
+        //       "configuration": "seq-color-display"
+        //     }
+        //   ]
+        // }
       ]
     }
   };
 
-//const ViewModel = ReturnType<typeof createViewState>
-
-
-// class HighlightRegionPlugin extends Plugin {
-//   name = 'HighlightRegionPlugin'
-
-//   install(pluginManager) {
-//     pluginManager.addToExtensionPoint(
-//       'Core-extendPluggableElement',
-      
-//       (pluggableElement) => {
-//         if (pluggableElement.name === 'LinearGenomeView') {
-//           const { stateModel } = pluggableElement
-//           const newStateModel = stateModel.extend(self => {
-//             const superRubberBandMenuItems = self.rubberBandMenuItems
-//             return {
-//               views: {
-//                 rubberBandMenuItems() {
-//                   return [
-//                     ...superRubberBandMenuItems(),
-//                     {
-//                       label: 'Console log selected region',
-//                       onClick: () => {
-//                         const { leftOffset, rightOffset } = self
-//                         const selectedRegions = self.getSelectedRegions(
-//                           leftOffset,
-//                           rightOffset,
-//                         )
-//                         // console log the list of potentially multiple
-//                         // regions that were selected
-//                         console.log(selectedRegions)
-//                       },
-//                     },
-//                   ]
-//                 },
-//               },
-//             }
-//           })
-
-//           pluggableElement.stateModel = newStateModel
-//         }
-//         return pluggableElement
-//       },
-//     )
-//   }
-
-//   configure() {}
-// }
 
 function App() {
   console.log("INSIDE APP");
@@ -224,24 +189,40 @@ function App() {
     return null
   }
     const pl = plugins.map(p => p.plugin);
-  // console.log("ACCESS FROM APP 111", pl)
     const state = createViewState({
       assembly,
      tracks,
       //plugins: [HighlightRegionPlugin],
       plugins: pl,
-      // plugins: [{
-      //   "name": "Traces",
-      //   //"url": "file:///Users/ramadod/Desktop/develop/cenextgen/gsd-ce-jbrowse/plugindev/dist/plugin/umd/index.js"
-      //   "url": "http://localhost:9000/dist/jbrowse-plugin-traces.umd.production.min.js"
-      //   //"url": "http://localhost:8002/bundle.js"
-      // }],
-      //location: '10:29,838,655..29,838,737',
       "location": "SARS-CoV-2:14,936..14,968",
       // onChange: (patch) => {
       //   setPatches((previous) => previous + JSON.stringify(patch) + '\n')
       // },
       defaultSession,
+      // configuration: {
+      //   theme: {
+      //     palette: {
+      //       primary: {
+      //         main: '#311b92',
+      //       },
+      //       secondary: {
+      //         main: '#0097a7',
+      //       },
+      //       tertiary: {
+      //         main: '#f57c00',
+      //       },
+      //       quaternary: {
+      //         main: '#d50000',
+      //       },
+      //       bases: {
+      //         A: { main: '#98FB98' },
+      //         C: { main: '#87CEEB' },
+      //         G: { main: '#DAA520' },
+      //         T: { main: '#DC143C' },
+      //       },
+      //     },
+      //   },
+      // },
     })
     
     
