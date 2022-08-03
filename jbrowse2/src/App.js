@@ -124,17 +124,8 @@ const defaultSession = {
               "configuration": "nextstrain-color-display"
             }
           ]
-        }, {
-          "type": "FeatureTrack",
-          "configuration": "electropherogram-annotations",
-          "displays": [
-            {
-              "type": "LinearBasicDisplay",
-              "configuration": "traces-color-display"
-            }
-          ]
-          
-        },  {
+        },   
+        {
           "type": "FeatureTrack",
           "configuration": "seq-annotations",
           "displays": [
@@ -144,7 +135,7 @@ const defaultSession = {
               showForward: true,
               showReverse: false,
               showTranslation: false,
-              height: 180,
+              height: 500,
             }
           ]
         }

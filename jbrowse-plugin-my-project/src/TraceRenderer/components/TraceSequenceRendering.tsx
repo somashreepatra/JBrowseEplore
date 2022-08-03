@@ -84,7 +84,7 @@ const QualityBars = ({
       qbd.map((qbdval: number, index: number) => {
         //const color = theme.palette.bases[letter.toUpperCase()]
         const x = leftPx + index * w;
-        const yval = 125 - qbdval;
+        const yval = 100 - qbdval;
         return (
           <React.Fragment key={index}>
             <rect x={x} y={yval} width={w} height={qbdval} fill='blue' style={{fill: 'blue'}} />
@@ -123,7 +123,7 @@ const Electropherogram = ({
   const [region] = regions
   const theme = createJBrowseTheme(configTheme)
   const codonTable = generateCodonTable(defaultCodonTable)
-  const height = 20
+  const height = 120
   const [feature] = [...features.values()]
   if (!feature) {
     return null
@@ -151,64 +151,104 @@ const Electropherogram = ({
   const label = readConfObject(config, 'label', { feature })
   const caption = readConfObject(config, 'caption', { feature })
   const strokeWidth = readConfObject(config, 'thickness', { feature }) || 1
-  console.log("SIGNALS ", signala, signalc, signalg, signalt);
+  
   const [left, right] = bpSpanPx(
     feature.get('start'),
     feature.get('end'),
     region,
     bpPerPx,
   )
-  const qbx = feature.get("QBX");
-  let pathdata: string = "";
-  const maxa = Math.max(...signala);
-  const heightpersignal = height/maxa;
-  let str = "";
-  for(let i = 0; i < 9; i++) {
-    let startindex = qbx[i];
-      let endindex = qbx[i+1];
-      
 
-      const w = Math.max((endindex - startindex) / len, 0.8); // Total width for 1 base
-      console.log("WIDTH ",w);
-      for(let j = startindex; j < endindex - 1; j++) {
-        const signalj = signala[j];
-        const signalj1 = signala[j+1];
-        let x = leftPx + j * w;
-        let x1 = leftPx + (j+1) * w;
-        const [m1, m2] = bpSpanPx(
-          heightpersignal * signalj,
-          heightpersignal * signalj1,
-          region,
-          bpPerPx,
-        )
-        console.log("X1 ",x1, " X ",x);
-        console.log("M1 ",m1, " M2 ",m2);
-        str += `M ${x} ${m1} L ${x1} ${m2}`;
-      }
-  }
-console.log("STR ",str);
+
+  const qbx = feature.get("QBX");
+  let pathdata: string = ``;
+  let paths = {A: '', T: '', G: '', C: ''};
+  const maxa = Math.max(...signala);
+  const heightpersignal = (height)/maxa;
+  const topY = 300;
+  console.log("SIGNALS ", signala, signalc, signalg, signalt, height, heightpersignal, w);
+  signala.forEach((val: number, index: number) => {
+    const x = left + index;// * w;
+    if(index === 0) {
+      pathdata +=  `M${left} ${topY - (val * heightpersignal)}`;
+    }
+    // pathdata += `A 2 2 0 1 1 ${x} ${val * heightpersignal}`;
+    pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
+  });
+  paths['A'] = pathdata;
+
+  pathdata = '';
+  signalc.forEach((val: number, index: number) => {
+    const x = left + index;// * w;
+    if(index === 0) {
+      pathdata +=  `M${left} ${topY - (val * heightpersignal)}`;
+    }
+    // pathdata += `A 2 2 0 1 1 ${x} ${val * heightpersignal}`;
+    pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
+  });
+  paths['C'] = pathdata;
+
+  pathdata = '';
+  signalg.forEach((val: number, index: number) => {
+    const x = left + index;// * w;
+    if(index === 0) {
+      pathdata +=  `M${left} ${topY - (val * heightpersignal)}`;
+    }
+    // pathdata += `A 2 2 0 1 1 ${x} ${val * heightpersignal}`;
+    pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
+  });
+  paths['G'] = pathdata;
+  
+  pathdata = '';
+  signalt.forEach((val: number, index: number) => {
+    const x = left + index;// * w;
+    if(index === 0) {
+      pathdata +=  `M${left} ${topY - (val * heightpersignal)}`;
+    }
+    // pathdata += `A 2 2 0 1 1 ${x} ${val * heightpersignal}`;
+    pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
+  });
+  paths['T'] = pathdata;
+  //ctx.arc(x * scaleX, sampleData[x] * scaleY, 2, 0, 2 * Math.PI, true);
+
+  // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+  // arc(x, y, radius, startAngle, endAngle, counterclockwise)
+
 
   return (
     <>
-      {
-      signala.map((signal: number, index: number) => {
-        //const color = theme.palette.bases[letter.toUpperCase()]
-        const x = reverse ? rightPx - (index + 1) * w : leftPx + index * w
-        return (
-          <React.Fragment key={index}>
-            <g>
+      <React.Fragment key={1}>
+            <g id="seq_g">
               <path
-               //d={`${str}`}
-                d={`M ${left} 25 C ${left} ${height}, ${right} ${height}, ${right} 0`}
+                d={paths.A}
+                stroke={'green'}
+                strokeWidth={strokeWidth}
+                fill="transparent"
+                pointerEvents="stroke"
+              />
+              <path
+                d={paths.T}
                 stroke={stroke}
                 strokeWidth={strokeWidth}
                 fill="transparent"
                 pointerEvents="stroke"
               />
+              <path
+                d={paths.G}
+                stroke={'orange'}
+                strokeWidth={strokeWidth}
+                fill="transparent"
+                pointerEvents="stroke"
+              />
+              <path
+                d={paths.C}
+                stroke={'blue'}
+                strokeWidth={strokeWidth}
+                fill="transparent"
+                pointerEvents="stroke"
+              />
             </g>
-          </React.Fragment>
-        )
-      })}
+      </React.Fragment>
     </>
   )
 }
@@ -352,7 +392,7 @@ function Sequence(props: MyProps) {
   const { regions, bpPerPx } = props
   const [region] = regions
   const width = (region.end - region.start) / bpPerPx
-  const totalHeight = 200
+  const totalHeight = 500
 
   return (
     <Wrapper {...props} totalHeight={totalHeight} width={width}>
