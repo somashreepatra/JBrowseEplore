@@ -29,17 +29,109 @@ interface MyProps {
   showTranslation: boolean
 }
 
-function Electropherogram(props: {
-  theme: any
-  bpPerPx: number
-  height: number
-  region: Region
-  feature: Feature
-  y: number
-  config: any
-}) {
+const QualityBars = ({
+  regions,
+  theme: configTheme,
+  features = new Map(),
+  showReverse,
+  showForward,
+  showTranslation,
+  bpPerPx,
+  config
+}: any) => {
 
-  const { bpPerPx, region, feature, theme, height, y, config } = props
+// (props: {
+//   theme: any
+//   bpPerPx: number
+//   height: number
+//   region: Region
+//   feature: Feature
+//   y: number
+//   config: any
+// }) {
+
+  //const { bpPerPx, region, feature, theme, height, y, config } = props
+  const [region] = regions
+  const theme = createJBrowseTheme(configTheme)
+  const codonTable = generateCodonTable(defaultCodonTable)
+  const height = 20
+  const [feature] = [...features.values()]
+  if (!feature) {
+    return null
+  }
+  const seq: string = feature.get('seq')
+  if (!seq) {
+    return null
+  }
+  const render = 1 / bpPerPx >= 12
+
+  const [leftPx, rightPx] = bpSpanPx(
+    feature.get('start'),
+    feature.get('end'),
+    region,
+    bpPerPx,
+  )
+  const qbd = feature.get('QBD');
+  const len = feature.get('end') - feature.get('start')
+  const w = Math.max((rightPx - leftPx) / len, 0.8)
+  const stl = `fill:'blue';stroke:'pink';stroke-width:5;fill-opacity:0.1;stroke-opacity:0.9`;
+
+  // Assume:  Quality bar total height : 100px.
+  
+  return (
+    <>
+      {
+      qbd.map((qbdval: number, index: number) => {
+        //const color = theme.palette.bases[letter.toUpperCase()]
+        const x = leftPx + index * w;
+        const yval = 125 - qbdval;
+        return (
+          <React.Fragment key={index}>
+            <rect x={x} y={yval} width={w} height={qbdval} fill='blue' style={{fill: 'blue'}} />
+            
+          </React.Fragment>
+        )
+      })}
+    </>
+  )
+
+
+}
+const Electropherogram = ({
+  regions,
+  theme: configTheme,
+  features = new Map(),
+  showReverse,
+  showForward,
+  showTranslation,
+  bpPerPx,
+  config
+}: any) => {
+
+// (props: {
+//   theme: any
+//   bpPerPx: number
+//   height: number
+//   region: Region
+//   feature: Feature
+//   y: number
+//   config: any
+// }) {
+
+  //const { bpPerPx, region, feature, theme, height, y, config } = props
+
+  const [region] = regions
+  const theme = createJBrowseTheme(configTheme)
+  const codonTable = generateCodonTable(defaultCodonTable)
+  const height = 20
+  const [feature] = [...features.values()]
+  if (!feature) {
+    return null
+  }
+  const seq: string = feature.get('seq')
+  if (!seq) {
+    return null
+  }
   const render = 1 / bpPerPx >= 12
 
   const [leftPx, rightPx] = bpSpanPx(
@@ -66,8 +158,36 @@ function Electropherogram(props: {
     region,
     bpPerPx,
   )
+  const qbx = feature.get("QBX");
+  let pathdata: string = "";
+  const maxa = Math.max(...signala);
+  const heightpersignal = height/maxa;
+  let str = "";
+  for(let i = 0; i < 9; i++) {
+    let startindex = qbx[i];
+      let endindex = qbx[i+1];
+      
 
-  
+      const w = Math.max((endindex - startindex) / len, 0.8); // Total width for 1 base
+      console.log("WIDTH ",w);
+      for(let j = startindex; j < endindex - 1; j++) {
+        const signalj = signala[j];
+        const signalj1 = signala[j+1];
+        let x = leftPx + j * w;
+        let x1 = leftPx + (j+1) * w;
+        const [m1, m2] = bpSpanPx(
+          heightpersignal * signalj,
+          heightpersignal * signalj1,
+          region,
+          bpPerPx,
+        )
+        console.log("X1 ",x1, " X ",x);
+        console.log("M1 ",m1, " M2 ",m2);
+        str += `M ${x} ${m1} L ${x1} ${m2}`;
+      }
+  }
+console.log("STR ",str);
+
   return (
     <>
       {
@@ -78,6 +198,7 @@ function Electropherogram(props: {
           <React.Fragment key={index}>
             <g>
               <path
+               //d={`${str}`}
                 d={`M ${left} 25 C ${left} ${height}, ${right} ${height}, ${right} 0`}
                 stroke={stroke}
                 strokeWidth={strokeWidth}
@@ -194,14 +315,18 @@ const SequenceSVG = ({
           bpPerPx={bpPerPx}
           theme={theme}
         />
-        {
-          <Electropherogram height={height}
+          {/* <Electropherogram height={height}
           y={(currY += 20)}
           feature={feature}
           region={region}
           bpPerPx={bpPerPx}
           theme={theme} config={config}></Electropherogram>
-        }
+          <QualityBars height={height}
+          y={(currY += 20)}
+          feature={feature}
+          region={region}
+          bpPerPx={bpPerPx}
+          theme={theme} config={config}></QualityBars> */}
     </>
   )
   
@@ -232,6 +357,8 @@ function Sequence(props: MyProps) {
   return (
     <Wrapper {...props} totalHeight={totalHeight} width={width}>
       <SequenceSVG {...props} />
+      <Electropherogram {...props}></Electropherogram>
+      <QualityBars {...props}></QualityBars>
     </Wrapper>
   )
 }
