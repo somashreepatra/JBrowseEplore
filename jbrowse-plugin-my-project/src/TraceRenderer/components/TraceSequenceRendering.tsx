@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react'
+//import React from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { AnyConfigurationModel } from '@jbrowse/core/configuration/configurationSchema'
 import { contrastingTextColor } from '@jbrowse/core/util/color'
 import { Feature } from '@jbrowse/core/util/simpleFeature'
@@ -16,17 +17,25 @@ import {
   generateCodonTable,
 } from '@jbrowse/core/util'
 import { readConfObject } from '@jbrowse/core/configuration'
-interface MyProps {
-  exportSVG?: { rasterizeLayers: boolean }
+interface SequenceProps {
+  exportSVG?: boolean
   features: Map<string, Feature>
   regions: Region[]
   bpPerPx: number
   config: AnyConfigurationModel
   highResolutionScaling: number
-  theme: any
+  configTheme: any
   showForward: boolean
   showReverse: boolean
-  showTranslation: boolean
+  showTranslation: boolean,
+  onMouseOut?: React.MouseEventHandler
+  onMouseDown?: React.MouseEventHandler
+  onMouseLeave?: React.MouseEventHandler
+  onMouseEnter?: React.MouseEventHandler
+  onMouseOver?: React.MouseEventHandler
+  onMouseMove?: (event: React.MouseEvent, featureId?: string) => void
+  onMouseUp?: React.MouseEventHandler
+  onClick?: React.MouseEventHandler
 }
 
 const QualityBars = ({
@@ -310,17 +319,119 @@ function DNA(props: {
   )
 }
 
-const SequenceSVG = ({
-  regions,
-  theme: configTheme,
-  features = new Map(),
-  showReverse,
-  showForward,
-  showTranslation,
-  bpPerPx,
-  config
-}: any) => {
-  const [region] = regions
+const SequenceSVG = (props: {
+  features: Map<string, Feature>,
+  regions: Region[]
+  bpPerPx: number
+  config: AnyConfigurationModel
+  configTheme: any
+  showForward: boolean
+  showReverse: boolean
+  showTranslation: boolean,
+  onMouseOut?: React.MouseEventHandler
+  onMouseDown?: React.MouseEventHandler
+  onMouseLeave?: React.MouseEventHandler
+  onMouseEnter?: React.MouseEventHandler
+  onMouseOver?: React.MouseEventHandler
+  onMouseMove?: (event: React.MouseEvent, featureId?: string) => void
+  onMouseUp?: React.MouseEventHandler
+  onClick?: React.MouseEventHandler
+}) => {
+  const {
+    features,
+    regions,
+    bpPerPx,
+    config,
+    configTheme,
+    showForward,
+    showReverse,
+    showTranslation,
+    onMouseOut,
+    onMouseDown,
+    onMouseLeave,
+    onMouseEnter,
+    onMouseOver,
+    onMouseMove,
+    onMouseUp,
+    onClick,
+  } = props
+  const [region] = regions || []
+  const width = (region.end - region.start) / bpPerPx
+  const displayMode = readConfObject(config, 'displayMode') as string
+
+  const ref = useRef<SVGSVGElement>(null)
+  const [mouseIsDown, setMouseIsDown] = useState(false)
+  //const [height, setHeight] = useState(0)
+  const [movedDuringLastMouseDown, setMovedDuringLastMouseDown] =
+    useState(false)
+  const mouseDown = useCallback(
+    (event: React.MouseEvent) => {
+      setMouseIsDown(true)
+      setMovedDuringLastMouseDown(false)
+      return onMouseDown?.(event)
+    },
+    [onMouseDown],
+  )
+
+  const mouseUp = useCallback(
+    (event: React.MouseEvent) => {
+      setMouseIsDown(false)
+      return onMouseUp?.(event)
+    },
+    [onMouseUp],
+  )
+
+  const mouseMove = useCallback(
+    (event: React.MouseEvent) => {
+
+      // if (!ref.current) {
+      //   return
+      // }
+      // if (mouseIsDown) {
+      //   setMovedDuringLastMouseDown(true)
+      // }
+      // const { left, top } = ref.current.getBoundingClientRect()
+      // const offsetX = event.clientX - left
+      // const offsetY = event.clientY - top
+      // const px = region.reversed ? width - offsetX : offsetX
+      // const clientBp = region.start + bpPerPx * px
+
+      // const featureIdCurrentlyUnderMouse = displayModel.getFeatureOverlapping?.(
+      //   blockKey,
+      //   clientBp,
+      //   offsetY,
+      // )
+
+      // if (onMouseMove) {
+      //   onMouseMove(event, featureIdCurrentlyUnderMouse)
+      // }
+    },
+    [
+      bpPerPx,
+      mouseIsDown,
+      onMouseMove,
+      region.reversed,
+      region.start,
+      width,
+    ],
+  )
+
+  const click = useCallback(
+    (event: React.MouseEvent) => {
+      // don't select a feature if we are clicking and dragging
+      if (movedDuringLastMouseDown) {
+        return
+      }
+      onClick?.(event)
+    },
+    [movedDuringLastMouseDown, onClick],
+  )
+
+
+
+
+  
+  //const [region] = regions
   const theme = createJBrowseTheme(configTheme)
   const codonTable = generateCodonTable(defaultCodonTable)
   const height = 20
@@ -372,35 +483,151 @@ const SequenceSVG = ({
   
 }
 
-const Wrapper = ({ exportSVG, width, totalHeight, children }: any) => {
-  return exportSVG ? (
-    <>{children}</>
-  ) : (
-    <svg
-      data-testid="sequence_track"
-      width={width}
-      height={totalHeight}
-      style={{ width, height: totalHeight }}
-    >
-      {children}
-    </svg>
-  )
-}
-
-function Sequence(props: MyProps) {
-  console.log("SEQUENCE ", props);
-  const { regions, bpPerPx } = props
-  const [region] = regions
+const Wrapper = (props: {
+    exportSVG?: boolean,
+    features: Map<string, Feature>
+    regions: Region[]
+    bpPerPx: number
+    config: AnyConfigurationModel
+    configTheme: any
+    showForward: boolean
+    showReverse: boolean
+    showTranslation: boolean,
+    onMouseOut?: React.MouseEventHandler
+    onMouseDown?: React.MouseEventHandler
+    onMouseLeave?: React.MouseEventHandler
+    onMouseEnter?: React.MouseEventHandler
+    onMouseOver?: React.MouseEventHandler
+    onMouseMove?: (event: React.MouseEvent, featureId?: string) => void
+    onMouseUp?: React.MouseEventHandler
+    onClick?: React.MouseEventHandler
+  }) => {
+    const {
+      exportSVG,
+      features,
+      regions,
+      bpPerPx,
+      config,
+      configTheme,
+      showForward,
+      showReverse,
+      showTranslation,
+      onMouseOut,
+      onMouseDown,
+      onMouseLeave,
+      onMouseEnter,
+      onMouseOver,
+      onMouseMove,
+      onMouseUp,
+      onClick,
+    } = props;
+  const [region] = regions || [];
   const width = (region.end - region.start) / bpPerPx
   const totalHeight = 500
+  const widthnew = (region.end - region.start) / bpPerPx;
+  const displayMode = readConfObject(config, 'displayMode') as string
 
+  const ref = useRef<SVGSVGElement>(null)
+  const [mouseIsDown, setMouseIsDown] = useState(false)
+  //const [height, setHeight] = useState(0)
+  const [movedDuringLastMouseDown, setMovedDuringLastMouseDown] =
+    useState(false)
+  const mouseDown = useCallback(
+    (event: React.MouseEvent) => {
+      setMouseIsDown(true)
+      setMovedDuringLastMouseDown(false)
+      return onMouseDown?.(event)
+    },
+    [onMouseDown],
+  )
+
+  const mouseUp = useCallback(
+    (event: React.MouseEvent) => {
+      setMouseIsDown(false)
+      return onMouseUp?.(event)
+    },
+    [onMouseUp],
+  )
+
+  const mouseMove = useCallback(
+    (event: React.MouseEvent) => {
+
+      // if (!ref.current) {
+      //   return
+      // }
+      // if (mouseIsDown) {
+      //   setMovedDuringLastMouseDown(true)
+      // }
+      // const { left, top } = ref.current.getBoundingClientRect()
+      // const offsetX = event.clientX - left
+      // const offsetY = event.clientY - top
+      // const px = region.reversed ? width - offsetX : offsetX
+      // const clientBp = region.start + bpPerPx * px
+
+      // const featureIdCurrentlyUnderMouse = displayModel.getFeatureOverlapping?.(
+      //   blockKey,
+      //   clientBp,
+      //   offsetY,
+      // )
+
+      // if (onMouseMove) {
+      //   onMouseMove(event, featureIdCurrentlyUnderMouse)
+      // }
+    },
+    [
+      bpPerPx,
+      mouseIsDown,
+      onMouseMove,
+      region.reversed,
+      region.start,
+      width,
+    ],
+  )
+
+  const click = useCallback(
+    (event: React.MouseEvent) => {
+      console.log("SVG CLICKED ", click);
+      // don't select a feature if we are clicking and dragging
+      
+      if (movedDuringLastMouseDown) {
+        return
+      }
+
+
+      onClick?.(event)
+    },
+    [movedDuringLastMouseDown, onClick],
+  )
+
+  
   return (
-    <Wrapper {...props} totalHeight={totalHeight} width={width}>
-      <SequenceSVG {...props} />
-      <Electropherogram {...props}></Electropherogram>
-      <QualityBars {...props}></QualityBars>
-    </Wrapper>
+      <svg
+        data-testid="sequence_track"
+        width={width}
+        height={totalHeight}
+        style={{ width, height: totalHeight }}
+        onMouseDown={mouseDown}
+        onMouseUp={mouseUp}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onMouseOver={onMouseOver}
+        onMouseOut={onMouseOut}
+        onMouseMove={mouseMove}
+        onClick={click}
+      >
+        <SequenceSVG {...props} />
+        <Electropherogram {...props}></Electropherogram>
+        <QualityBars {...props}></QualityBars>
+      </svg>
   )
 }
 
-export default observer(Sequence)
+function SequenceRendering(props: SequenceProps) {
+  console.log("SEQUENCE ", props);
+
+  return (
+    <Wrapper {...props} />
+  )
+}
+
+export default observer(SequenceRendering)
