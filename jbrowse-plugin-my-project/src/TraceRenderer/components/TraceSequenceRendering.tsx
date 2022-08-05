@@ -300,6 +300,7 @@ function DNA(props: {
               height={height}
               fill={color ? color.main : '#aaa'}
               stroke={render ? '#555' : 'none'}
+              data-index={index}
             />
             {render ? (
               <text
@@ -308,6 +309,7 @@ function DNA(props: {
                 dominantBaseline="middle"
                 textAnchor="middle"
                 fill={color ? contrastingTextColor(color.main) : 'black'}
+                data-index={index}
               >
                 {letter}
               </text>
@@ -417,7 +419,7 @@ const SequenceSVG = (props: {
   )
 
   const click = useCallback(
-    (event: React.MouseEvent) => {
+    (event: React.MouseEvent, featureId: string) => {
       // don't select a feature if we are clicking and dragging
       if (movedDuringLastMouseDown) {
         return
@@ -488,7 +490,7 @@ const Wrapper = (props: {
     onMouseUp?: React.MouseEventHandler
     onClick?: React.MouseEventHandler
   }) => {
-    const {
+    let {
       exportSVG,
       features,
       regions,
@@ -517,7 +519,8 @@ const Wrapper = (props: {
   const [mouseIsDown, setMouseIsDown] = useState(false)
   //const [height, setHeight] = useState(0)
   const [movedDuringLastMouseDown, setMovedDuringLastMouseDown] = useState(false)
-
+  const [isSelectBase, setSelectBase] = useState(false)
+  
   const mouseDown = useCallback(
     (event: React.MouseEvent) => {
       setMouseIsDown(true)
@@ -572,9 +575,15 @@ const Wrapper = (props: {
 
   const click = useCallback(
     (event: React.MouseEvent) => {
-      console.log("SVG CLICKED ", event);
+
+      console.log("SVG CLICKED ", event, features, region, bpPerPx, width);
+
+      console.log("EVENT TARGET ",event.target);
       // don't select a feature if we are clicking and dragging
-      
+      const et: any = event.target;
+      let index = et.getAttribute('data-index')
+      console.log("INDEX ",index);
+      setSelectBase(true);
       if (movedDuringLastMouseDown) {
         return
       }
@@ -582,11 +591,17 @@ const Wrapper = (props: {
 
       onClick?.(event)
     },
-    [movedDuringLastMouseDown, onClick],
+    [bpPerPx,movedDuringLastMouseDown, onClick,
+      region.reversed,
+      region.start,
+      width],
   )
 
   
   return (
+    <React.Fragment>
+      {isSelectBase ? (<div>Test</div>): null}
+
       <svg
         data-testid="sequence_track"
         width={width}
@@ -602,9 +617,10 @@ const Wrapper = (props: {
         onClick={click}
       >
         <SequenceSVG {...props} />
-        <Electropherogram {...props}></Electropherogram>
-        <QualityBars {...props}></QualityBars>
+        {/* <Electropherogram {...props}></Electropherogram>
+        <QualityBars {...props}></QualityBars> */}
       </svg>
+    </React.Fragment>
   )
 }
 
