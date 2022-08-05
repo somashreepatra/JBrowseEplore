@@ -17,6 +17,7 @@ import {
   generateCodonTable,
 } from '@jbrowse/core/util'
 import { readConfObject } from '@jbrowse/core/configuration'
+import { from } from 'rxjs'
 interface SequenceProps {
   exportSVG?: boolean
   features: Map<string, Feature>
@@ -511,6 +512,7 @@ const Wrapper = (props: {
     } = props;
   const [region] = regions || [];
   const width = (region.end - region.start) / bpPerPx
+  const height = 100
   const totalHeight = 500
   const widthnew = (region.end - region.start) / bpPerPx;
   const displayMode = readConfObject(config, 'displayMode') as string
@@ -519,8 +521,18 @@ const Wrapper = (props: {
   const [mouseIsDown, setMouseIsDown] = useState(false)
   //const [height, setHeight] = useState(0)
   const [movedDuringLastMouseDown, setMovedDuringLastMouseDown] = useState(false)
-  const [isSelectBase, setSelectBase] = useState(false)
-  
+  const [isSelectBase, setSelectBase] = useState(0)
+  const [feature] = Array.from(features.values())
+  const [leftPx, rightPx] = bpSpanPx(
+    feature.get('start'),
+    feature.get('end'),
+    region,
+    bpPerPx,
+  )
+  const qbd = feature.get('QBD');
+  const len = feature.get('end') - feature.get('start')
+  const w = Math.max((rightPx - leftPx) / len, 0.8)
+
   const mouseDown = useCallback(
     (event: React.MouseEvent) => {
       setMouseIsDown(true)
@@ -582,8 +594,9 @@ const Wrapper = (props: {
       // don't select a feature if we are clicking and dragging
       const et: any = event.target;
       let index = et.getAttribute('data-index')
-      console.log("INDEX ",index);
-      setSelectBase(true);
+      let x = et.getAttribute('x')
+      console.log("INDEX ,X",index, x);
+      setSelectBase(x);
       if (movedDuringLastMouseDown) {
         return
       }
@@ -599,14 +612,19 @@ const Wrapper = (props: {
 
   
   return (
-    <React.Fragment>
-      {isSelectBase ? (<div>Test</div>): null}
-
+    // <React.Fragment>
+      <div data-testid="seq_wrapper" style={{position: `relative`, width, height: totalHeight}}>
+      {isSelectBase ? 
+      (<div data-testid="base_select" 
+      style={{width: w, height: totalHeight, left: isSelectBase + `px`, 
+        border: `1px dashed black`, 
+        position: `absolute`}}
+      >-</div>): null}
       <svg
         data-testid="sequence_track"
         width={width}
-        height={totalHeight}
-        style={{ width, height: totalHeight }}
+        height={height}
+        style={{ width, height: height}}
         onMouseDown={mouseDown}
         onMouseUp={mouseUp}
         onMouseEnter={onMouseEnter}
@@ -620,7 +638,9 @@ const Wrapper = (props: {
         {/* <Electropherogram {...props}></Electropherogram>
         <QualityBars {...props}></QualityBars> */}
       </svg>
-    </React.Fragment>
+      </div>
+      
+    // </React.Fragment>
   )
 }
 
@@ -628,7 +648,7 @@ function SequenceRendering(props: SequenceProps) {
   console.log("SEQUENCE ", props);
 
   return (
-    <Wrapper {...props} />
+    <Wrapper {...props}/>
   )
 }
 
