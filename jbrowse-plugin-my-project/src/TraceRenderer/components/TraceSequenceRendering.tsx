@@ -303,6 +303,7 @@ function DNA(props: {
               stroke={render ? '#555' : 'none'}
               data-index={index}
             />
+              
             {render ? (
               <text
                 x={x + w / 2}
@@ -315,6 +316,7 @@ function DNA(props: {
                 {letter}
               </text>
             ) : null}
+            
           </React.Fragment>
         )
       })}
@@ -592,11 +594,12 @@ const Wrapper = (props: {
 
       console.log("EVENT TARGET ",event.target);
       // don't select a feature if we are clicking and dragging
-      const et: any = event.target;
+      const et: any = event.target as Element;
       let index = et.getAttribute('data-index')
       let x = et.getAttribute('x')
+     
       console.log("INDEX ,X",index, x);
-      setSelectBase(x);
+      setSelectBase(index);
       if (movedDuringLastMouseDown) {
         return
       }
@@ -613,10 +616,10 @@ const Wrapper = (props: {
   
   return (
     // <React.Fragment>
-      <div data-testid="seq_wrapper" style={{position: `relative`, width, height: totalHeight}}>
+    <div data-testid="seq_wrapper" style={{position: `relative`, width, height: totalHeight}}>
       {isSelectBase ? 
       (<div data-testid="base_select" 
-      style={{width: w, height: totalHeight, left: isSelectBase + `px`, 
+      style={{width: w, height: totalHeight, left:  leftPx + isSelectBase * w + `px`, 
         border: `1px dashed black`, 
         position: `absolute`}}
       >-</div>): null}
@@ -638,7 +641,7 @@ const Wrapper = (props: {
         {/* <Electropherogram {...props}></Electropherogram>
         <QualityBars {...props}></QualityBars> */}
       </svg>
-      </div>
+    </div>
       
     // </React.Fragment>
   )
