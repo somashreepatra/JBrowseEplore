@@ -186,9 +186,10 @@ function App() {
       //plugins: [HighlightRegionPlugin],
       plugins: pl,
       "location": "SARS-CoV-2:14,936..14,968",
-      // onChange: (patch) => {
-      //   setPatches((previous) => previous + JSON.stringify(patch) + '\n')
-      // },
+      onChange: (patch) => {
+        console.log('onChange patch', patch);
+        //setPatches((previous) => previous + JSON.stringify(patch) + '\n')
+      },
       defaultSession,
       // configuration: {
       //   theme: {

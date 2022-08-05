@@ -175,7 +175,7 @@ const Electropherogram = ({
   const maxa = Math.max(...signala);
   const heightpersignal = (height)/maxa;
   const topY = 300;
-  console.log("SIGNALS ", signala, signalc, signalg, signalt, height, heightpersignal, w);
+  //console.log("SIGNALS ", signala, signalc, signalg, signalt, height, heightpersignal, w);
   signala.forEach((val: number, index: number) => {
     const x = left + index;// * w;
     if(index === 0) {
@@ -273,7 +273,7 @@ function DNA(props: {
 }) {
   
   const { bpPerPx, region, feature, theme, height, seq, y } = props
-  console.log("DISPLAY DNA ", seq);
+  // console.log("DISPLAY DNA ", seq);
   const render = 1 / bpPerPx >= 12
 
   const [leftPx, rightPx] = bpSpanPx(
@@ -320,7 +320,7 @@ function DNA(props: {
 }
 
 const SequenceSVG = (props: {
-  features: Map<string, Feature>,
+  features: Map<string, Feature>, 
   regions: Region[]
   bpPerPx: number
   config: AnyConfigurationModel
@@ -338,7 +338,7 @@ const SequenceSVG = (props: {
   onClick?: React.MouseEventHandler
 }) => {
   const {
-    features,
+    features = new Map(),
     regions,
     bpPerPx,
     config,
@@ -435,7 +435,7 @@ const SequenceSVG = (props: {
   const theme = createJBrowseTheme(configTheme)
   const codonTable = generateCodonTable(defaultCodonTable)
   const height = 20
-  const [feature] = [...features.values()]
+  const [feature]= Array.from(features.values());
   if (!feature) {
     return null
   }
@@ -447,10 +447,7 @@ const SequenceSVG = (props: {
   const signalt: number[] = feature.get('Signal_T');
   const signalg: number[] = feature.get('Signal_G');
   const signalc: number[] = feature.get('Signal_C');
-  console.log("SIGNAL A ",signala);
-  console.log("SIGNAL C ",signalc);
-  console.log("SIGNAL G ",signalg);
-  console.log("SIGNAL T ",signalt);
+
   // incrementer for the y-position of the current sequence being rendered
   // (applies to both translation rows and dna rows)
   let currY = -20
@@ -465,19 +462,8 @@ const SequenceSVG = (props: {
           seq={region.reversed ? complement(seq) : seq}
           bpPerPx={bpPerPx}
           theme={theme}
-        />
-          {/* <Electropherogram height={height}
-          y={(currY += 20)}
-          feature={feature}
-          region={region}
-          bpPerPx={bpPerPx}
-          theme={theme} config={config}></Electropherogram>
-          <QualityBars height={height}
-          y={(currY += 20)}
-          feature={feature}
-          region={region}
-          bpPerPx={bpPerPx}
-          theme={theme} config={config}></QualityBars> */}
+      />
+        
     </>
   )
   
@@ -530,8 +516,8 @@ const Wrapper = (props: {
   const ref = useRef<SVGSVGElement>(null)
   const [mouseIsDown, setMouseIsDown] = useState(false)
   //const [height, setHeight] = useState(0)
-  const [movedDuringLastMouseDown, setMovedDuringLastMouseDown] =
-    useState(false)
+  const [movedDuringLastMouseDown, setMovedDuringLastMouseDown] = useState(false)
+
   const mouseDown = useCallback(
     (event: React.MouseEvent) => {
       setMouseIsDown(true)
@@ -586,7 +572,7 @@ const Wrapper = (props: {
 
   const click = useCallback(
     (event: React.MouseEvent) => {
-      console.log("SVG CLICKED ", click);
+      console.log("SVG CLICKED ", event);
       // don't select a feature if we are clicking and dragging
       
       if (movedDuringLastMouseDown) {
