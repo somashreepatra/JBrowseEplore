@@ -642,12 +642,16 @@ const Wrapper = (props: {
         <Electropherogram {...props}></Electropherogram>
         <QualityBars {...props}></QualityBars>
       </svg>
-      <KeyDown />
+      <KeyDown childToParent={childToParent}/>
     </div>
     // </React.Fragment> 
   )
 }
+const [data, setData] = useState('');
 
+const childToParent = (childdata: any) => {
+   console.log('childToParent', childdata);
+}
 function SequenceRendering(props: SequenceProps) {
   console.log("SEQUENCE RENDERING ", props);
 
