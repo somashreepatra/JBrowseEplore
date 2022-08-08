@@ -627,8 +627,8 @@ const Wrapper = (props: {
       <svg
         data-testid="sequence_track"
         width={width}
-        height={height}
-        style={{ width, height: height}}
+        height={totalHeight}
+        style={{ width, height: totalHeight - 100}}
         onMouseDown={mouseDown}
         onMouseUp={mouseUp}
         onMouseEnter={onMouseEnter}
@@ -642,9 +642,9 @@ const Wrapper = (props: {
         <Electropherogram {...props}></Electropherogram>
         <QualityBars {...props}></QualityBars>
       </svg>
-      <KeyDown/>
+      <KeyDown />
     </div>
-    // </React.Fragment>
+    // </React.Fragment> 
   )
 }
 
