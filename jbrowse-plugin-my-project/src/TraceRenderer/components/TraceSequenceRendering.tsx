@@ -17,7 +17,8 @@ import {
   generateCodonTable,
 } from '@jbrowse/core/util'
 import { readConfObject } from '@jbrowse/core/configuration'
-import { from } from 'rxjs'
+import KeyDown from '../../keydown'
+
 interface SequenceProps {
   exportSVG?: boolean
   features: Map<string, Feature>
@@ -224,33 +225,32 @@ const Electropherogram = ({
   // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
   // arc(x, y, radius, startAngle, endAngle, counterclockwise)
 
-
   return (
     <>
       <React.Fragment key={1}>
-            <g id="seq_g">
-              <path
+            <g data-testid="seq_g">
+              <path data-testid="seq_path_a"
                 d={paths.A}
                 stroke={'green'}
                 strokeWidth={strokeWidth}
                 fill="transparent"
                 pointerEvents="stroke"
               />
-              <path
+              <path data-testid="seq_path_t"
                 d={paths.T}
                 stroke={stroke}
                 strokeWidth={strokeWidth}
                 fill="transparent"
                 pointerEvents="stroke"
               />
-              <path
+              <path data-testid="seq_path_g"
                 d={paths.G}
                 stroke={'orange'}
                 strokeWidth={strokeWidth}
                 fill="transparent"
                 pointerEvents="stroke"
               />
-              <path
+              <path data-testid="seq_path_c"
                 d={paths.C}
                 stroke={'blue'}
                 strokeWidth={strokeWidth}
@@ -596,10 +596,11 @@ const Wrapper = (props: {
       // don't select a feature if we are clicking and dragging
       const et: any = event.target as Element;
       let index = et.getAttribute('data-index')
-      let x = et.getAttribute('x')
      
-      console.log("INDEX ,X",index, x);
-      setSelectBase(index);
+      console.log("INDEX",index);
+      if(index !== undefined || index !== null) {
+        setSelectBase(index);
+      }
       if (movedDuringLastMouseDown) {
         return
       }
@@ -638,20 +639,20 @@ const Wrapper = (props: {
         onClick={click}
       >
         <SequenceSVG {...props} />
-        {/* <Electropherogram {...props}></Electropherogram>
-        <QualityBars {...props}></QualityBars> */}
+        <Electropherogram {...props}></Electropherogram>
+        <QualityBars {...props}></QualityBars>
       </svg>
+      <KeyDown/>
     </div>
-      
     // </React.Fragment>
   )
 }
 
 function SequenceRendering(props: SequenceProps) {
-  console.log("SEQUENCE ", props);
+  console.log("SEQUENCE RENDERING ", props);
 
   return (
-    <Wrapper {...props}/>
+    <Wrapper {...props} />
   )
 }
 
