@@ -8,30 +8,8 @@ import { Region } from '@jbrowse/core/util/types'
 import { createJBrowseTheme } from '@jbrowse/core/ui'
 import { observer } from 'mobx-react'
 
-import KeyDown from '../../keydown';
-import { features } from 'process'
-
-interface SequenceProps {
-  exportSVG?: boolean
-  features: Map<string, Feature>
-  regions: Region[]
-  bpPerPx: number
-  config: AnyConfigurationModel
-  highResolutionScaling: number
-  configTheme: any
-  showForward: boolean
-  showReverse: boolean
-  showTranslation: boolean,
-  onMouseOut?: React.MouseEventHandler
-  onMouseDown?: React.MouseEventHandler
-  onMouseLeave?: React.MouseEventHandler
-  onMouseEnter?: React.MouseEventHandler
-  onMouseOver?: React.MouseEventHandler
-  onMouseMove?: (event: React.MouseEvent, featureId?: string) => void
-  onMouseUp?: React.MouseEventHandler
-  onClick?: React.MouseEventHandler
-}
-
+import {KeyDown} from '../../keydown';
+import { SequenceProps } from './ITrace'
 
 
 const Wrapper = (props: {
@@ -53,8 +31,13 @@ const Wrapper = (props: {
     onMouseUp?: React.MouseEventHandler
     onClick?: React.MouseEventHandler
   }) => {
-
-    let {features, onClick} = props;
+    
+    const height = 20
+    let { features, regions, bpPerPx, configTheme, onClick} = props;
+    const theme = createJBrowseTheme(configTheme)
+    const [region] = regions || [];
+    const width = (region.end - region.start) / bpPerPx
+    const totalHeight = 500
     const clickHandler = useCallback(
       (event: React.MouseEvent) => {
         console.log("SVG CLICKED ", event);
@@ -89,8 +72,16 @@ const Wrapper = (props: {
     }
 
     return (
-        <div onClick={clickHandler}>
-          <KeyDown childToParent={childToParent} feature={qbt}/>
+        <div>
+          <svg
+            data-testid="sequence_track"
+            width={width}
+            height={totalHeight}
+            style={{ width, height: totalHeight - 100}}
+            onClick={clickHandler}
+          >
+            <KeyDown childToParent={childToParent} feature={feature0} region={region} bpPerPx={bpPerPx} height={height} theme={theme} />
+          </svg>
         </div>
     )
 }
