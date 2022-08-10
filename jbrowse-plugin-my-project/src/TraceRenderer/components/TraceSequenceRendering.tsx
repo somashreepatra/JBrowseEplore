@@ -9,6 +9,7 @@ import { createJBrowseTheme } from '@jbrowse/core/ui'
 import { observer } from 'mobx-react'
 
 import {KeyDown} from '../../keydown';
+import { features } from 'process'
 import { SequenceProps } from './ITrace'
 
 
@@ -38,12 +39,15 @@ const Wrapper = (props: {
     const [region] = regions || [];
     const width = (region.end - region.start) / bpPerPx
     const totalHeight = 500
+    const [selectedIndex, setSelectedIndex] = useState(-1);
     const clickHandler = useCallback(
       (event: React.MouseEvent) => {
         console.log("SVG CLICKED ", event);
-        if(true) {
-          
-        }
+        const target: any = event.target;
+        const dataset = target?.dataset;
+        const index = dataset?.index;
+        console.log("index  :: ", index);
+        setSelectedIndex(index);
         onClick?.(event)
       },
       [],
@@ -57,10 +61,10 @@ const Wrapper = (props: {
   
     const childToParent = (childdata: any) => {
       console.log('childToParent :: ', childdata, feature0);
-      
-      if(childdata[0] !== 0 && childdata[0] !== qbt.charAt(25)) {
+      console.log("selectedIndex ", selectedIndex);
+      if(childdata[0] !== 0 && selectedIndex !== -1 && childdata[0] !== qbt.charAt(selectedIndex)) {
         let qbtarr = feature0.get("QBT");
-        qbtarr[25] = childdata[0];
+        qbtarr[selectedIndex] = childdata[0];
         //qbtstr.replace("A", "a");
         
         setQbt(qbtarr.join(""));
