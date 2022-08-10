@@ -66,15 +66,21 @@ const Wrapper = (props: {
       [],
     )
     const [feature, setFeature] = useState(Array.from(features.values()));
-    const [name, setName] = useState('');
+    const [qbt, setQbt] = useState('');
     console.log("feature  ",feature);
 
   const feature0 = feature[0];
+  
+  
     const childToParent = (childdata: any) => {
       console.log('childToParent :: ', childdata, feature0);
       
-      if(childdata[0] !== 0 && childdata[0] !== name) {
-        setName(childdata[0]);
+      if(childdata[0] !== 0 && childdata[0] !== qbt.charAt(25)) {
+        let qbtarr = feature0.get("QBT");
+        qbtarr[25] = childdata[0];
+        //qbtstr.replace("A", "a");
+        
+        setQbt(qbtarr.join(""));
        // feature0.set("name", "MODIFIED_"+childdata[0]);
         console.log("FEATURE 0 ", feature0);
         //setFeature(Array.from(features.values()));
@@ -82,18 +88,17 @@ const Wrapper = (props: {
       
     }
 
-   return (
-      <div onClick={clickHandler}>
-       <KeyDown childToParent={childToParent} feature={name}/>
-      </div>
-   )
+    return (
+        <div onClick={clickHandler}>
+          <KeyDown childToParent={childToParent} feature={qbt}/>
+        </div>
+    )
 }
 
 const [data, setData] = useState('');
 
 function SequenceRendering(props: SequenceProps) {
   console.log("SEQUENCE RENDERING ", props);
-
   return (
     <Wrapper {...props} />
   )
