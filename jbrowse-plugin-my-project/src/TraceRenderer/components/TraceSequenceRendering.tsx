@@ -36,9 +36,9 @@ const Wrapper = (props: {
     const height = 20
     let { features, regions, bpPerPx, configTheme, onClick} = props;
     const theme = createJBrowseTheme(configTheme)
-    const [region] = regions || [];
-    const width = (region.end - region.start) / bpPerPx
-    const totalHeight = 500
+    // const [region] = regions || [];
+    // const width = (region.end - region.start) / bpPerPx
+    // const totalHeight = 500
     
 
 
@@ -86,13 +86,11 @@ const Wrapper = (props: {
     )
 }
 
-const [data, setData] = useState('');
 
 const keyDownEventHandler = (childdata: any, props: any) => {
   let { features, regions, bpPerPx, configTheme, onClick} = props;
   const [qbt, setQbt] = useState('');
   console.log('childToParent :: ', childdata);
-  //let selectedIndex = 25;
   console.log("selectedIndex ", selectedIndex);
   const featureValues: any = Array.from(features.values());
   console.log("featureValues ",featureValues);
@@ -101,11 +99,8 @@ const keyDownEventHandler = (childdata: any, props: any) => {
     let qbtarr = featureValues[0].get("QBT");
     console.log("QBT ARR ", qbtarr);
     qbtarr[selectedIndex] = childdata[0];
-    //qbtstr.replace("A", "a");
     setQbt(qbtarr.join(""));
-   // feature0.set("name", "MODIFIED_"+childdata[0]);
     console.log("FEATURE 0 ", featureValues[0]);
-    //setFeature(Array.from(features.values()));
   }
 }
 
