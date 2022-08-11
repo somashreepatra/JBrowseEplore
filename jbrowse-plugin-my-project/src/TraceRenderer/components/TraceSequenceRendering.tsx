@@ -9,7 +9,7 @@ import { createJBrowseTheme } from '@jbrowse/core/ui'
 import { observer } from 'mobx-react'
 
 import {KeyDown} from '../../keydown';
-import { SequenceProps } from './ITrace'
+import { BaseOperationEnum, IKeyEventData, SequenceProps } from './ITrace'
 import useKeyDown from '../../useKeyDown';
 //const [selectedIndex, setSelectedIndex] = useState(-1);
 let selectedIndex = -1;
@@ -111,8 +111,18 @@ const keyDownEventHandler = (childdata: any, props: any) => {
 
 function SequenceRendering(props: SequenceProps) {
   console.log("SEQUENCE RENDERING ", props);
-  const [x, y] = useKeyDown();
-  {keyDownEventHandler([x,y], props)}
+  const keydata: any = useKeyDown();
+  console.log("KEY DATA ",keydata);
+  // {
+  //   operation: BaseOperationEnum.UPDATE,
+  //   key: props.key.toLowerCase(),
+  //   keyCode: props.keyCode
+  // }
+  
+  //if(keydata[2] === BaseOperationEnum.UPDATE) {
+    {keyDownEventHandler([keydata[0], keydata[1]], props)}
+  //}
+  
 
   return (
     <Wrapper {...props} />

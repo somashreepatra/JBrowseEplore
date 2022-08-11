@@ -21,4 +21,16 @@ export interface SequenceProps {
     onMouseMove?: (event: React.MouseEvent, featureId?: string) => void
     onMouseUp?: React.MouseEventHandler
     onClick?: React.MouseEventHandler
-  }
+}
+
+export enum BaseOperationEnum {
+    ADD,
+    DELETE,
+    UPDATE,
+    NONE
+}
+export interface IKeyEventData {
+    operation: BaseOperationEnum,
+    key: string,
+    keyCode: number
+}
