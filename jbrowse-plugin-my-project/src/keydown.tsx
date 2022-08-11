@@ -74,27 +74,14 @@ export const KeyDown = (props: {OnSvgClick: any, selectedIndex: number, feature:
   const [region] = regions || [];
   const width = (region.end - region.start) / bpPerPx
   const totalHeight = 500
-  const len = feature.get('end') - feature.get('start')
-  const [leftPx, rightPx] = bpSpanPx(
-    feature.get('start'),
-    feature.get('end'),
-    region,
-    bpPerPx,
-  )
-  const w = Math.max((rightPx - leftPx) / len, 0.8)
+  
   const svgClickHandler = (event: React.MouseEvent) => {
     OnSvgClick(event);
   }
 
   
   return (
-    <div data-testid="seq_wrapper" style={{position: `relative`, width, height: totalHeight}}>
-      {selectedIndex ? 
-      (<div data-testid="base_select" 
-      style={{width: w, height: totalHeight, left:  leftPx + selectedIndex * w + `px`, 
-        border: `1px dashed black`, 
-        position: `absolute`}}
-      >-</div>): null}
+   
       <svg
             data-testid="sequence_track_New"
             width={width}
@@ -104,7 +91,7 @@ export const KeyDown = (props: {OnSvgClick: any, selectedIndex: number, feature:
           >
         <DNA height={height} feature={feature} region={region} bpPerPx={bpPerPx} theme={theme} />
       </svg>
-      </div>
+     
   );
 }
 
