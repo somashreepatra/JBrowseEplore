@@ -5,7 +5,10 @@ const useKeyDown = () => {
 
   useEffect(() => {
     const handler = (props) => {
-      setCoords([props.key, props.keyCode])
+      console.log("KEY PRESS HANDLER ", props);
+      if(['a', 't', 'g', 'c' ].includes(props.key?.toLowerCase())) {
+        setCoords([props.key.toLowerCase(), props.keyCode])
+      }
     };
     window.addEventListener('keydown', handler);
     return () => {

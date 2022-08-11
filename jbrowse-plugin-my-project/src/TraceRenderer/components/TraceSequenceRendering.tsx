@@ -9,10 +9,10 @@ import { createJBrowseTheme } from '@jbrowse/core/ui'
 import { observer } from 'mobx-react'
 
 import {KeyDown} from '../../keydown';
-import { features } from 'process'
 import { SequenceProps } from './ITrace'
-
-
+import useKeyDown from '../../useKeyDown';
+//const [selectedIndex, setSelectedIndex] = useState(-1);
+let selectedIndex = -1;
 const Wrapper = (props: {
     exportSVG?: boolean,
     features: Map<string, Feature>
@@ -39,61 +39,81 @@ const Wrapper = (props: {
     const [region] = regions || [];
     const width = (region.end - region.start) / bpPerPx
     const totalHeight = 500
-    const [selectedIndex, setSelectedIndex] = useState(-1);
-    const clickHandler = useCallback(
-      (event: React.MouseEvent) => {
-        console.log("SVG CLICKED ", event);
-        const target: any = event.target;
-        const dataset = target?.dataset;
-        const index = dataset?.index;
-        console.log("index  :: ", index);
-        setSelectedIndex(index);
-        onClick?.(event)
-      },
-      [],
-    )
+    
+
+
+    // const clickHandler = useCallback(
+    //   (event: React.MouseEvent) => {
+    //     console.log("SVG CLICKED ", event);
+    //     const target: any = event.target;
+    //     const dataset = target?.dataset;
+    //     const index = dataset?.index;
+    //     console.log("index  :: ", index);
+    //     setSelectedIndex(index);
+    //     onClick?.(event)
+    //   },
+    //   [],
+    // )
+
+    
+    
+    const clickHandler = (event: React.MouseEvent) => {
+      console.log("event  ", event);
+      //selectedIndex = 25;//event.target.dataset.index;
+      const target: any = event.target;
+      const dataset = target?.dataset;
+      selectedIndex = dataset?.index;
+      console.log("index  :: ", selectedIndex);
+    }
     const [feature, setFeature] = useState(Array.from(features.values()));
-    const [qbt, setQbt] = useState('');
+    
     console.log("feature  ",feature);
 
-  const feature0 = feature[0];
+    const feature0 = feature[0];
   
   
-    const childToParent = (childdata: any) => {
-      console.log('childToParent :: ', childdata, feature0);
-      console.log("selectedIndex ", selectedIndex);
-      if(childdata[0] !== 0 && selectedIndex !== -1 && childdata[0] !== qbt.charAt(selectedIndex)) {
-        let qbtarr = feature0.get("QBT");
-        qbtarr[selectedIndex] = childdata[0];
-        //qbtstr.replace("A", "a");
-        
-        setQbt(qbtarr.join(""));
-       // feature0.set("name", "MODIFIED_"+childdata[0]);
-        console.log("FEATURE 0 ", feature0);
-        //setFeature(Array.from(features.values()));
-      }
-      
-    }
+    
+
+    
 
     return (
         <div>
-          <svg
-            data-testid="sequence_track"
-            width={width}
-            height={totalHeight}
-            style={{ width, height: totalHeight - 100}}
-            onClick={clickHandler}
-          >
-            <KeyDown childToParent={childToParent} feature={feature0} region={region} bpPerPx={bpPerPx} height={height} theme={theme} />
-          </svg>
+          
+            {/* <KeyDown OnSvgClick={clickHandler} childToParent={childToParent} feature={feature0} regions={regions} bpPerPx={bpPerPx} height={height} theme={theme} /> */}
+            <KeyDown OnSvgClick={clickHandler} selectedIndex={selectedIndex} feature={feature0} regions={regions} bpPerPx={bpPerPx} height={height} theme={theme} />
+          
         </div>
     )
 }
 
 const [data, setData] = useState('');
 
+const keyDownEventHandler = (childdata: any, props: any) => {
+  let { features, regions, bpPerPx, configTheme, onClick} = props;
+  const [qbt, setQbt] = useState('');
+  console.log('childToParent :: ', childdata);
+  //let selectedIndex = 25;
+  console.log("selectedIndex ", selectedIndex);
+  const featureValues: any = Array.from(features.values());
+  console.log("featureValues ",featureValues);
+
+  if(childdata[0] !== 0 && selectedIndex > -1 && childdata[0] !== qbt.charAt(selectedIndex)) {
+    let qbtarr = featureValues[0].get("QBT");
+    console.log("QBT ARR ", qbtarr);
+    qbtarr[selectedIndex] = childdata[0];
+    //qbtstr.replace("A", "a");
+    setQbt(qbtarr.join(""));
+   // feature0.set("name", "MODIFIED_"+childdata[0]);
+    console.log("FEATURE 0 ", featureValues[0]);
+    //setFeature(Array.from(features.values()));
+  }
+}
+
 function SequenceRendering(props: SequenceProps) {
   console.log("SEQUENCE RENDERING ", props);
+  const [x, y] = useKeyDown();
+  {keyDownEventHandler([x,y], props)}
+
   return (
     <Wrapper {...props} />
   )
