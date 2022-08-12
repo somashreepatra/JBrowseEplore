@@ -11,6 +11,7 @@ import { observer } from 'mobx-react'
 import {KeyDown} from '../../keydown';
 import { BaseOperationEnum, IKeyEventData, SequenceProps } from './ITrace'
 import useKeyDown from '../../useKeyDown';
+import { bpSpanPx } from '@jbrowse/core/util'
 //const [selectedIndex, setSelectedIndex] = useState(-1);
 let selectedIndex = -1;
 const Wrapper = (props: {
@@ -36,9 +37,9 @@ const Wrapper = (props: {
     const height = 20
     let { features, regions, bpPerPx, configTheme, onClick} = props;
     const theme = createJBrowseTheme(configTheme)
-    const [region] = regions || [];
-    const width = (region.end - region.start) / bpPerPx
-    const totalHeight = 500
+    // const [region] = regions || [];
+    // const width = (region.end - region.start) / bpPerPx
+    // const totalHeight = 500
     
 
 
@@ -67,17 +68,32 @@ const Wrapper = (props: {
     }
     const [feature, setFeature] = useState(Array.from(features.values()));
     
-    console.log("feature  ",feature);
+    console.log("feature , selectedIndex ",feature, selectedIndex);
 
     const feature0 = feature[0];
-  
-  
+    const totalHeight = 500
+    const [region] = regions || [];
+    const width = (region.end - region.start) / bpPerPx
+    const len = feature0.get('end') - feature0.get('start')
+    const [leftPx, rightPx] = bpSpanPx(
+      feature0.get('start'),
+      feature0.get('end'),
+      region,
+      bpPerPx,
+    )
+    const w = Math.max((rightPx - leftPx) / len, 0.8)
     
 
     
 
     return (
-        <div>
+      <div data-testid="seq_wrapper" style={{position: `relative`, width, height: totalHeight}}>
+      {selectedIndex ? 
+        (<div data-testid="base_select" 
+        style={{width: w, height: totalHeight, left:  leftPx + selectedIndex * w + `px`, 
+          border: `1px dashed black`, 
+          position: `absolute`}}
+        >-</div>): null}
           
             {/* <KeyDown OnSvgClick={clickHandler} childToParent={childToParent} feature={feature0} regions={regions} bpPerPx={bpPerPx} height={height} theme={theme} /> */}
             <KeyDown OnSvgClick={clickHandler} selectedIndex={selectedIndex} feature={feature0} regions={regions} bpPerPx={bpPerPx} height={height} theme={theme} />
@@ -86,13 +102,11 @@ const Wrapper = (props: {
     )
 }
 
-const [data, setData] = useState('');
 
 const keyDownEventHandler = (childdata: any, props: any) => {
   let { features, regions, bpPerPx, configTheme, onClick} = props;
   const [qbt, setQbt] = useState('');
   console.log('childToParent :: ', childdata);
-  //let selectedIndex = 25;
   console.log("selectedIndex ", selectedIndex);
   const featureValues: any = Array.from(features.values());
   console.log("featureValues ",featureValues);
@@ -101,11 +115,8 @@ const keyDownEventHandler = (childdata: any, props: any) => {
     let qbtarr = featureValues[0].get("QBT");
     console.log("QBT ARR ", qbtarr);
     qbtarr[selectedIndex] = childdata[0];
-    //qbtstr.replace("A", "a");
     setQbt(qbtarr.join(""));
-   // feature0.set("name", "MODIFIED_"+childdata[0]);
     console.log("FEATURE 0 ", featureValues[0]);
-    //setFeature(Array.from(features.values()));
   }
 }
 
