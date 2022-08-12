@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { BaseOperationEnum } from "./TraceRenderer/components/ITrace";
 
 const useKeyDown = () => {
-  const [coords, setCoords] = useState([0, 0, false])
+  const [coords, setCoords] = useState([0, 0, BaseOperationEnum.NONE])
   // useState({
   //   operation: BaseOperationEnum.NONE,
   //   key: 0,
@@ -12,21 +12,23 @@ const useKeyDown = () => {
   useEffect(() => {
     const handler = (props) => {
       console.log("KEY PRESS HANDLER ", props);
-      if(['a', 't', 'g', 'c' ].includes(props.key?.toLowerCase())) {
+      if(['a', 't', 'g', 'c' ].includes(props.key?.toLowerCase())) { // TODO: Include mixed bases as well here
         // setCoords({
         //   operation: BaseOperationEnum.UPDATE,
         //   key: props.key.toLowerCase(),
         //   keyCode: props.keyCode
         // })
         //setCoords([props.key.toLowerCase(), props.keyCode, BaseOperationEnum.UPDATE])
-        setCoords([props.key.toLowerCase(), props.keyCode, false])
+        console.log("UPDATE");
+        setCoords([props.key.toLowerCase(), props.keyCode, BaseOperationEnum.UPDATE])
       } else if(['Backspace'].includes(props.key)) {
         // setCoords({
         //   key: 0,
         //   keyCode: 0,
         //   operation: BaseOperationEnum.DELETE
         // })
-        setCoords([props.key.toLowerCase(), props.keyCode, true])
+        console.log("DELETE");
+        setCoords([props.key.toLowerCase(), props.keyCode, BaseOperationEnum.DELETE])
       }
     };
     window.addEventListener('keydown', handler);
