@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react'
-import useKeyDown from './useKeyDown';
+import React from 'react'
 import { Feature } from '@jbrowse/core/util/simpleFeature'
 import { Region } from '@jbrowse/core/util/types'
 import { contrastingTextColor } from '@jbrowse/core/util/color'
@@ -13,6 +12,7 @@ const DNA = (props: ISequence) =>{
   
   const { bpPerPx, region, feature, theme, height} = props
   console.log("PROPS:  ", props);
+  // console.log("DISPLAY DNA ", seq);
   const render = 1 / bpPerPx >= 12
 
   const [leftPx, rightPx] = bpSpanPx(
@@ -64,34 +64,42 @@ const DNA = (props: ISequence) =>{
   )
 }
 
-
-
-export const KeyDown = (props: {OnSvgClick: any, selectedIndex: number, feature: any, regions: any, bpPerPx: number, height: any, theme: any}) => {
- 
-  const {OnSvgClick, feature, selectedIndex, regions, bpPerPx, height, theme} = props;
-
+export const KeyDown = (props: {isAddBase: boolean, OnSvgClick: any, OnSvgDoubleClick: any, leftMousePosition: string, selectedIndex: number, feature: any, regions: any, bpPerPx: number, height: any, theme: any}) => {
+  const {isAddBase, OnSvgClick, OnSvgDoubleClick, leftMousePosition, feature, selectedIndex, regions, bpPerPx, height, theme} = props;
   console.log("FEATURE ", feature);
+  console.log("leftMousePosition inside keydown ",leftMousePosition);
   const [region] = regions || [];
   const width = (region.end - region.start) / bpPerPx
   const totalHeight = 500
   
+
   const svgClickHandler = (event: React.MouseEvent) => {
     OnSvgClick(event);
   }
 
+  const svgDblClickHandler = (event: React.MouseEvent) => {
+    OnSvgDoubleClick(event);
+  }
   
   return (
-   
-      <svg
-            data-testid="sequence_track_New"
-            width={width}
-            height={totalHeight}
-            style={{ width, height: totalHeight - 100}}
-            onClick={svgClickHandler}
-          >
-        <DNA height={height} feature={feature} region={region} bpPerPx={bpPerPx} theme={theme} />
-      </svg>
-     
+      <div>
+        {
+          isAddBase ?
+          (<div style={{position:"relative"}}> 
+            <input name="add_base_ce" title="qualityEditDiv" value="" style={{left: leftMousePosition, position: "absolute", top: "0",width: "10px",fontFamily: "verdana,sans-serif",fontSize: "15px",border: "0",outline: "medium none"}} />
+          </div>) : null
+        }
+        <svg
+              data-testid="sequence_track_New"
+              width={width}
+              height={totalHeight}
+              style={{ width, height: totalHeight - 100}}
+              onClick={svgClickHandler}
+              onDoubleClick={svgDblClickHandler}
+            >
+          <DNA height={height} feature={feature} region={region} bpPerPx={bpPerPx} theme={theme} />
+        </svg>
+      </div>
   );
 }
 

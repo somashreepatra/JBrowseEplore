@@ -12,7 +12,7 @@ const useKeyDown = () => {
   useEffect(() => {
     const handler = (props) => {
       console.log("KEY PRESS HANDLER ", props);
-      if(['a', 't', 'g', 'c' ].includes(props.key?.toLowerCase())) { // TODO: Include mixed bases as well here
+      if(['a', 't', 'g', 'c' ].includes(props.key?.toLowerCase())) {
         // setCoords({
         //   operation: BaseOperationEnum.UPDATE,
         //   key: props.key.toLowerCase(),
@@ -29,6 +29,9 @@ const useKeyDown = () => {
         // })
         console.log("DELETE");
         setCoords([props.key.toLowerCase(), props.keyCode, BaseOperationEnum.DELETE])
+      } else if(['Enter'].includes(props.key)) {
+        let base = document.getElementById('add_base_ce').value;
+        setCoords([base, props.keyCode, BaseOperationEnum.ADD])
       }
     };
     window.addEventListener('keydown', handler);
