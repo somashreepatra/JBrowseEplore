@@ -124,21 +124,63 @@ const defaultSession = {
               "configuration": "nextstrain-color-display"
             }
           ]
-        },   
+        }, {
+          "type": "FeatureTrack",
+          "configuration": "electropherogram-annotations",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "traces-color-display"
+            }
+          ]
+          
+        },  
         {
           "type": "FeatureTrack",
           "configuration": "seq-annotations",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "seq-color-display",
               showForward: true,
               showReverse: false,
               showTranslation: false,
-              height: 500,
+              height: 680,
+              renderer: {
+                type: 'TraceSequenceRenderer',
+              },
             }
           ]
-        }
+        }, 
+        {
+          "type": "FeatureTrack",
+          "configuration": "basic-annotations",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "basic-color-display",
+              showForward: true,
+              showReverse: false,
+              showTranslation: false,
+              height: 680,
+            }
+          ]
+        }, 
+        
+        // {
+        //   "type": "FeatureTrack",
+        //   "configuration": "bar-annotations",
+        //   "displays": [
+        //     {
+        //       "type": "LinearBasicDisplay",
+        //       "configuration": "bar-color-display",
+        //       showForward: true,
+        //       showReverse: false,
+        //       showTranslation: false,
+        //       height: 180
+        //     }
+        //   ]
+        // }
 
         
         // {
@@ -186,10 +228,9 @@ function App() {
       //plugins: [HighlightRegionPlugin],
       plugins: pl,
       "location": "SARS-CoV-2:14,936..14,968",
-      onChange: (patch) => {
-        console.log('onChange patch', patch);
-        //setPatches((previous) => previous + JSON.stringify(patch) + '\n')
-      },
+      // onChange: (patch) => {
+      //   setPatches((previous) => previous + JSON.stringify(patch) + '\n')
+      // },
       defaultSession,
       // configuration: {
       //   theme: {

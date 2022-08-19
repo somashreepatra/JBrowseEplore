@@ -14,15 +14,17 @@ const DNA = (props: ISequence) =>{
   console.log("PROPS:  ", props);
   // console.log("DISPLAY DNA ", seq);
   const render = 1 / bpPerPx >= 12
+  const start = feature.get('start') || 0
+  const end = feature.get('end') || 0
 
-  const [leftPx, rightPx] = bpSpanPx(
-    feature.get('start'),
-    feature.get('end'),
+  let [leftPx, rightPx] = bpSpanPx(
+    start,
+    end,
     region,
     bpPerPx,
   )
   const reverse = region.reversed
-  const len = feature.get('end') - feature.get('start')
+  const len = end - start
   const w = Math.max((rightPx - leftPx) / len, 0.8)
     const y = 0;
   const qbtarr = feature.get("QBT");
@@ -70,7 +72,7 @@ export const KeyDown = (props: {isAddBase: boolean, OnSvgClick: any, OnSvgDouble
   console.log("leftMousePosition inside keydown ",leftMousePosition);
   const [region] = regions || [];
   const width = (region.end - region.start) / bpPerPx
-  const totalHeight = 500
+  const totalHeight = 50
   
 
   const svgClickHandler = (event: React.MouseEvent) => {
@@ -93,7 +95,7 @@ export const KeyDown = (props: {isAddBase: boolean, OnSvgClick: any, OnSvgDouble
               data-testid="sequence_track_New"
               width={width}
               height={totalHeight}
-              style={{ width, height: totalHeight - 100}}
+              style={{ width, height: totalHeight}}
               onClick={svgClickHandler}
               onDoubleClick={svgDblClickHandler}
             >

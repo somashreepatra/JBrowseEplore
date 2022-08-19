@@ -31,7 +31,7 @@ export default class TracesAdapter extends BaseFeatureDataAdapter {
   }
 
   static makeFeatures(fdata: SimpleFeatureSerialized[]) {
-    const features = new Map<string, Feature[]>()
+     const features = new Map<string, Feature[]>()
     for (let i = 0; i < fdata.length; i += 1) {
       if (fdata[i]) {
         const f = this.makeFeature(fdata[i])
@@ -81,9 +81,26 @@ export default class TracesAdapter extends BaseFeatureDataAdapter {
           observer.next(f)
         }
       }
+      
       observer.complete()
     })
   }
 
   freeResources(/* { region } */): void {}
 }
+
+
+
+// observer.next(
+//   new SimpleFeature({
+//     ...feat.toJSON(),
+//     uniqueId: `${feat.id()}:${region.start}-${region.end}`,
+//     end: region.end,
+//     start: region.start,
+//     seq: feat
+//       .get('seq')
+//       .slice(
+//         Math.max(region.start - feat.get('start'), 0),
+//         Math.max(region.end - feat.get('start'), 0),
+//       ),
+//   }),

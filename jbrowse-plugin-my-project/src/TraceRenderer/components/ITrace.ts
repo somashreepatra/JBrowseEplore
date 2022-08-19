@@ -10,6 +10,7 @@ export interface SequenceProps {
     config: AnyConfigurationModel
     highResolutionScaling: number
     configTheme: any
+    keydata: any
     showForward: boolean
     showReverse: boolean
     showTranslation: boolean,
@@ -24,10 +25,10 @@ export interface SequenceProps {
 }
 
 export enum BaseOperationEnum {
-    ADD,
-    DELETE,
-    UPDATE,
-    NONE
+    ADD = "ADD",
+    DELETE = "DELETE",
+    UPDATE = "UPDATE",
+    NONE = "NONE"
 }
 export interface IKeyEventData {
     operation: BaseOperationEnum,

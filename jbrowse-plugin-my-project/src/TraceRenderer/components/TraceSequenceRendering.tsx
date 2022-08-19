@@ -346,7 +346,7 @@ const keyDownEventHandler = (childdata: any, props: any) => {
         qbtarr[selectedIndex] = "-";
       } else if(childdata[2] === BaseOperationEnum.ADD) {
         console.log("ADD OPERATION BEFORE :: ", qbtarr);
-        const newselected = selectedIndex+1;
+        const newselected = ++selectedIndex;
         qbtarr.splice(newselected, 0, childdata[0]);
         console.log("ADD OPERATION AFTER :: ", qbtarr);
       }
@@ -358,7 +358,7 @@ const keyDownEventHandler = (childdata: any, props: any) => {
   }
 }
 
-function SequenceRendering(props: SequenceProps) {
+function SequenceRendering(props: any) {
   console.log("SEQUENCE RENDERING ", props);
   const keydata: any = useKeyDown();
   console.log("KEY DATA ",props);
@@ -373,7 +373,7 @@ function SequenceRendering(props: SequenceProps) {
   const totalHeight = 200
   
   return (
-    <div>
+    <div >
       <svg
         data-testid="sequence_track_New"
         width={width}
