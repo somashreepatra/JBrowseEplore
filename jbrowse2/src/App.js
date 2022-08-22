@@ -94,27 +94,6 @@ const defaultSession = {
             }
           ]
         },
-        // {
-        //   "type": "QuantitativeTrack",
-        //   "configuration": "entropy-score",
-        //   "displays": [
-        //     {
-        //       "type": "LinearWiggleDisplay",
-        //       "displayId": "entropy-score-LinearWiggleDisplay",
-        //       "renderers": {
-        //         "DensityRenderer": {
-        //           "type": "DensityRenderer"
-        //         },
-        //         "XYPlotRenderer": {
-        //           "type": "XYPlotRenderer"
-        //         },
-        //         "LinePlotRenderer": {
-        //           "type": "LinePlotRenderer"
-        //         }
-        //       }
-        //     }
-        //   ]
-        // },
         {
           "type": "FeatureTrack",
           "configuration": "nextstrain-annotations",
@@ -137,28 +116,25 @@ const defaultSession = {
         },  
         {
           "type": "FeatureTrack",
-          "configuration": "seq-annotations",
+          "configuration": "e1",
           "displays": [
             {
-              "type": "TraceSequenceDisplay",
-              "configuration": "seq-color-display",
+              "type": "LinearBasicDisplay",
+              "configuration": "e1d1",
               showForward: true,
               showReverse: false,
               showTranslation: false,
               height: 680,
-              renderer: {
-                type: 'TraceSequenceRenderer',
-              },
             }
           ]
         }, 
         {
           "type": "FeatureTrack",
-          "configuration": "basic-annotations",
+          "configuration": "e2",
           "displays": [
             {
               "type": "LinearBasicDisplay",
-              "configuration": "basic-color-display",
+              "configuration": "e2d2",
               showForward: true,
               showReverse: false,
               showTranslation: false,
@@ -166,33 +142,104 @@ const defaultSession = {
             }
           ]
         }, 
-        
-        // {
-        //   "type": "FeatureTrack",
-        //   "configuration": "bar-annotations",
-        //   "displays": [
-        //     {
-        //       "type": "LinearBasicDisplay",
-        //       "configuration": "bar-color-display",
-        //       showForward: true,
-        //       showReverse: false,
-        //       showTranslation: false,
-        //       height: 180
-        //     }
-        //   ]
-        // }
-
-        
-        // {
-        //   "type": "ReferenceSequenceTrack",
-        //   "configuration": "sequence-annotations",
-        //   "displays": [
-        //     {
-        //       "type": "LinearBasicDisplay",
-        //       "configuration": "seq-color-display"
-        //     }
-        //   ]
-        // }
+        {
+          "type": "FeatureTrack",
+          "configuration": "e3",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "e3d3",
+              showForward: true,
+              showReverse: false,
+              showTranslation: false,
+              height: 680,
+            }
+          ]
+        }, 
+        {
+          "type": "FeatureTrack",
+          "configuration": "e4",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "e4d4",
+              showForward: true,
+              showReverse: false,
+              showTranslation: false,
+              height: 680,
+            }
+          ]
+        }, 
+        {
+          "type": "FeatureTrack",
+          "configuration": "e5",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "e5d5",
+              showForward: true,
+              showReverse: false,
+              showTranslation: false,
+              height: 680,
+            }
+          ]
+        }, 
+        {
+          "type": "FeatureTrack",
+          "configuration": "e6",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "e6d6",
+              showForward: true,
+              showReverse: false,
+              showTranslation: false,
+              height: 680,
+            }
+          ]
+        }, 
+        {
+          "type": "FeatureTrack",
+          "configuration": "e7",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "e7d7",
+              showForward: true,
+              showReverse: false,
+              showTranslation: false,
+              height: 680,
+            }
+          ]
+        }, 
+        {
+          "type": "FeatureTrack",
+          "configuration": "e8",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "e8d8",
+              showForward: true,
+              showReverse: false,
+              showTranslation: false,
+              height: 680,
+            }
+          ]
+        }, 
+        {
+          "type": "FeatureTrack",
+          "configuration": "e9",
+          "displays": [
+            {
+              "type": "LinearBasicDisplay",
+              "configuration": "e9d9",
+              showForward: true,
+              showReverse: false,
+              showTranslation: false,
+              height: 680,
+            }
+          ]
+        }
       ]
     }
   };

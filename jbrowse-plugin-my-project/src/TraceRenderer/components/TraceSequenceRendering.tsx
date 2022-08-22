@@ -121,7 +121,7 @@ const Electropherogram = ({
   if (!feature) {
     return null
   }
-  const seq: string = feature.get('seq')
+  const seq: string = feature.get('gappedSeq')
   if (!seq) {
     return null
   }
@@ -136,10 +136,11 @@ const Electropherogram = ({
   const reverse = region.reversed
   const len = feature.get('end') - feature.get('start')
   const w = Math.max((rightPx - leftPx) / len, 0.8)
-  const signala = feature.get('Signal_A');
-  const signalt = feature.get('Signal_T');
-  const signalg = feature.get('Signal_G');
-  const signalc = feature.get('Signal_C');
+  const signaldata = feature.get('signaldata');
+  const signala = signaldata[0];// feature.get('Signal_A');
+  const signalt = signaldata[1]; //feature.get('Signal_T');
+  const signalg = signaldata[2]; //feature.get('Signal_G');
+  const signalc = signaldata[3]; //feature.get('Signal_C');
   let stroke = 'red';
   const label = readConfObject(config, 'label', { feature })
   const caption = readConfObject(config, 'caption', { feature })
@@ -153,7 +154,7 @@ const Electropherogram = ({
   )
 
 
-  const qbx = feature.get("QBX");
+  //const qbx = feature.get("QBX");
   let pathdata: string = ``;
   let paths = {A: '', T: '', G: '', C: ''};
   const maxa = Math.max(...signala);
@@ -337,7 +338,9 @@ const keyDownEventHandler = (childdata: any, props: any) => {
   const featureValues: any = Array.from(features.values());
   console.log("featureValues ",featureValues);
   if(childdata[0] !== 0 && selectedIndex > -1 && childdata[0] !== qbt.charAt(selectedIndex)) {
-    let qbtarr = featureValues[0].get("QBT");
+    //let qbtarr = featureValues[0].get("QBT");
+    const gappedSeq = featureValues[0].get("gappedSeq");
+    const qbtarr = gappedSeq.split("");
     console.log("QBT ARR ", qbtarr);
     if(childdata[2] !== BaseOperationEnum.NONE) {
       if(childdata[2] === BaseOperationEnum.UPDATE) {

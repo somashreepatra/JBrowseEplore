@@ -27,11 +27,14 @@ const DNA = (props: ISequence) =>{
   const len = end - start
   const w = Math.max((rightPx - leftPx) / len, 0.8)
     const y = 0;
-  const qbtarr = feature.get("QBT");
-  console.log("QBT ARRAY :: ", qbtarr);
+  //const gappedSeq = feature.get("gappedSeq");
+  const gappedSeq = feature.get("gappedSeq");
+  const seqarr = gappedSeq.split("");
+
+  console.log("QBT ARRAY :: ", seqarr);
   return (
     <>
-      {qbtarr.map((letter: string, index: number) => {
+      {seqarr.map((letter: string, index: number) => {
         const color = theme.palette.bases[letter.toUpperCase()]
         const x = reverse ? rightPx - (index + 1) * w : leftPx + index * w
         return (
