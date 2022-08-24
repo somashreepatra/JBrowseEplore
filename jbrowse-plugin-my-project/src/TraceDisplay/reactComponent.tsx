@@ -4,6 +4,7 @@ import { TraceTrackModel } from './model';
 import { BaseBlock } from '@jbrowse/core/util/blockTypes';
 import { makeStyles } from 'tss-react/mui'
 import { getConf } from '@jbrowse/core/configuration'
+import { getContainingView } from '@jbrowse/core/util'
 const useStyles = makeStyles()(theme => ({
     display: {
       position: 'relative',
@@ -11,6 +12,13 @@ const useStyles = makeStyles()(theme => ({
       textAlign: 'left',
       width: '100%',
       minHeight: '100%',
+    },
+    linearBlocks: {
+        whiteSpace: 'nowrap',
+        textAlign: 'left',
+        position: 'absolute',
+        minHeight: '100%',
+        display: 'flex',
     },
     traceBlock: {
         position: 'relative',
@@ -40,10 +48,7 @@ type Coord = [number, number]
 const TraceDisplay = observer(
     (props: { model: TraceTrackModel; children: React.ReactNode }) => {
 
-    console.log("PROPS BEFORE ",props);
   const { model, children } = props
-  console.log("props  ",props);
-  console.log("CHILDREN ", children);
   
   const { classes } = useStyles()
     const ref = useRef<HTMLDivElement>(null)
@@ -53,10 +58,12 @@ const TraceDisplay = observer(
     const [clientMouseCoord, setClientMouseCoord] = useState<Coord>([0, 0])
     const [contextCoord, setContextCoord] = useState<Coord>()
 
-  const { blockDefinitions, blockState } = model
-  console.log("BLOCK STATE ", blockDefinitions, blockState);
-  console.log("DISPLAY ID ", getConf(model, 'displayId'));
-  let isAddBase = true, leftMousePosition = "10px";
+  const { blockDefinitions, blockState, features, showEditInput,  } = model
+  let leftMousePosition;
+  const viewModel: any = getContainingView(model)
+  const editstartposition = model.editstartposition || 0;
+  leftMousePosition =  editstartposition + Math.abs(blockDefinitions.offsetPx - viewModel.offsetPx) - 40;
+  let baseval = "G";
   return (
     <div
         ref={ref}
@@ -75,37 +82,58 @@ const TraceDisplay = observer(
             console.log("Mouse Clicked ", event);
             //setClientMouseCoord([event.clientX, event.clientY])
         }}
-        onMouseMove={event => {
-            if (!ref.current) {
-              return
-            }
-            const rect = ref.current.getBoundingClientRect()
-            const { left, top } = rect
-            setOffsetMouseCoord([event.clientX - left, event.clientY - top])
-            setClientMouseCoord([event.clientX, event.clientY])
-            setClientRect(rect)
-          }}>
-            {
-                isAddBase ?
-                (<div style={{position:"relative"}}> 
-                    <input name="add_base_ce" title="qualityEditDiv" value="" style={{left: leftMousePosition, position: "absolute", top: "0",width: "10px",fontFamily: "verdana,sans-serif",fontSize: "15px",border: "0",outline: "medium none"}} />
-                </div>) : null
-            }
-            <>
-            {blockDefinitions.map(block => {
-                const state = blockState.get(block.key)
-                return (
-                    <TraceBlock
-                    block={block}
-                    key={`${model.id}-${block.key}`}
-                    >
-                    {state && state.ReactComponent ? (
-                        <state.ReactComponent model={state} />
-                    ) : null}
-                    </TraceBlock>
-                )
-            })}
-            </>
+        // onMouseMove={event => {
+        //     if (!ref.current) {
+        //       return
+        //     }
+        //     const rect = ref.current.getBoundingClientRect()
+        //     const { left, top } = rect
+        //     setOffsetMouseCoord([event.clientX - left, event.clientY - top])
+        //     setClientMouseCoord([event.clientX, event.clientY])
+        //     setClientRect(rect)
+        //   }}
+          >
+            <div
+                data-testid="Blockset"
+                className={classes.linearBlocks}
+                style={{
+                    left: blockDefinitions.offsetPx - viewModel.offsetPx,
+                }}>
+                    {
+                        showEditInput ?
+                        (<div style={{position:"relative"}}> 
+                            <input name="add_base_ce" title="qualityEditDiv" value={baseval} style={{left: leftMousePosition+"px", position: "absolute", top: "103px",width: "51px",fontFamily: "verdana,sans-serif",fontSize: "15px",border: "0px",outline: "medium none",zIndex:1}} onKeyUp={(event: any) => {
+            console.log("EVENT KEYUP ", event.key)
+                                event.preventDefault();
+                if(['a', 't', 'g', 'c' ].includes(event.key?.toLowerCase())) {  // Update a base
+                    console.log("UPDATE");
+                    event.target.value = event.target.value + event.key
+                } else if(['Backspace'].includes(event.key)) {  // Delete a base
+                    console.log("DELETE");
+                    const newval = event.target.value.slice(0, -1);
+                    event.target.value = newval;
+                } 
+                return true;
+            
+          }} />
+                        </div>) : null
+                    }
+                    <>
+                    {blockDefinitions.map(block => {
+                        let state = blockState.get(block.key)
+                        return (
+                            <TraceBlock
+                            block={block}
+                            key={`${model.id}-${block.key}`}
+                            >
+                            {state && state.ReactComponent ? (
+                                <state.ReactComponent model={state} />
+                            ) : null}
+                            </TraceBlock>
+                        )
+                    })}
+                    </>
+            </div>
     </div>
 
     

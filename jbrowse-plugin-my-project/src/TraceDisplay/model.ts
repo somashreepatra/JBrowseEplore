@@ -96,71 +96,88 @@ const stateModelFactory = (configSchema: AnyConfigurationSchemaType) =>
       types.model({
         type: types.literal('TraceSequenceDisplay'),
         showEditInput: types.maybe(types.boolean),
+        editstartposition: types.maybe(types.number),
+        editfeatureindex: types.maybe(types.number),
+        // editInputMetaData: types.maybe(types.model('', {
+        //   startposition: types.number,
+        //   featureindex: types.number,
+        // }))
       })
-    )
-      .views((self) => ({
+  ).views((self) => ({
         get rendererTypeName() {
           console.log("RENDERER NAME :: ",getConf(self, ['renderer', 'type']));
           return getConf(self, ['renderer', 'type'])
         },
         get editInput() {
           return self.showEditInput ?? getConf(self, ['renderer', 'showEditInput'])
-        }
-      }))
-      .views(self => ({
-        get rendererConfig() {
-          const configBlob = getConf(self, ['renderer']) || {}
-          const config = configBlob as Omit<typeof configBlob, symbol>
-  
-          return self.rendererType.configSchema.create(
-            {
-              ...config,
-              showEditInput: self.showEditInput
-            },
-            getEnv(self),
-          )
         },
-      }))
+        // get editstartposition() {
+        //   return self.editstartposition ?? getConf(self, ['renderer', 'editstartposition'])
+        // },
+        // get editfeatureindex() {
+        //   return self.editfeatureindex ?? getConf(self, ['renderer', 'editfeatureindex'])
+        // },
+  }))
+      // .views(self => ({
+      //   get rendererConfig() {
+      //     const configBlob = getConf(self, ['renderer']) || {}
+      //     const config = configBlob as Omit<typeof configBlob, symbol>
+  
+      //     return self.rendererType.configSchema.create(
+      //       {
+      //         ...config,
+      //         showEditInput: self.showEditInput
+      //       },
+      //       getEnv(self),
+      //     )
+      //   },
+      // }))
       .actions(self => ({
         toggleShowEditInput() {
-          self.trackShowLabels = !self.showLabels
+          self.showEditInput = !self.showEditInput
+        },
+        setEditstartposition(startposition: number) {
+          self.editstartposition = startposition
+        },
+        setEditfeatureindex(editfeatureindex: number) {
+          self.editfeatureindex = editfeatureindex
         }
       }))
-      .views(self => {
-        const {
-          trackMenuItems: superTrackMenuItems,
-          renderProps: superRenderProps,
-        } = self
-        return {
-          renderProps() {
-            const config = self.rendererConfig
-            const superProps = superRenderProps()
+      // .views(self => {
+      //   const {
+      //     trackMenuItems: superTrackMenuItems,
+      //     renderProps: superRenderProps,
+      //   } = self
+      //   return {
+      //     renderProps() {
+      //       const config = self.rendererConfig
+      //       const superProps = superRenderProps()
   
-            const superPropsOmit = superProps as Omit<typeof superProps, symbol>
+      //       const superPropsOmit = superProps as Omit<typeof superProps, symbol>
   
-            return {
-              ...superPropsOmit,
+      //       return {
+      //         ...superPropsOmit,
   
-              config,
-            }
-          },
+      //         config,
+      //       }
+      //     },
   
-          trackMenuItems(): MenuItem[] {
-            return [
-              ...superTrackMenuItems(),
-              {
-                label: 'Show Edit Input',
-                icon: VisibilityIcon,
-                type: 'checkbox',
-                checked: self.showLabels,
-                onClick: () => {
-                  self.toggleShowLabels()
-                },
-              }
-            ]
-          },
-        }
-      })
+      //     trackMenuItems(): MenuItem[] {
+      //       return [
+      //         ...superTrackMenuItems(),
+      //         {
+      //           label: 'Show Edit Input',
+      //           icon: VisibilityIcon,
+      //           type: 'checkbox',
+      //           checked: self.showLabels,
+      //           onClick: () => {
+      //             self.toggleShowLabels()
+      //           },
+      //         }
+      //       ]
+      //     },
+      //   }
+      // })
     
     
 

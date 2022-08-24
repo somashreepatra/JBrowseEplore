@@ -16,6 +16,7 @@ import {
   generateCodonTable,
 } from '@jbrowse/core/util'
 import { readConfObject } from '@jbrowse/core/configuration'
+import { model } from 'mobx-state-tree/dist/internal'
 
 
 //const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -160,7 +161,6 @@ const Electropherogram = ({
   const maxa = Math.max(...signala);
   const heightpersignal = (height)/maxa;
   const topY = 150;
-  //console.log("SIGNALS ", signala, signalc, signalg, signalt, height, heightpersignal, w);
   signala.forEach((val: number, index: number) => {
     const x = left + index;// * w;
     if(index === 0) {
@@ -253,6 +253,7 @@ const Wrapper = (props: {
     bpPerPx: number
     config: AnyConfigurationModel
     configTheme: any
+    displayModel: any
     showForward: boolean
     showReverse: boolean
     showTranslation: boolean,
@@ -268,14 +269,13 @@ const Wrapper = (props: {
   }) => {
     
     const height = 20
-    let { features, regions, bpPerPx, configTheme, onDblClick} = props;
+    let { features, displayModel, regions, bpPerPx, configTheme, onDblClick} = props;
     const theme = createJBrowseTheme(configTheme)
     const [region] = regions || [];
     const width = (region.end - region.start) / bpPerPx
     const totalHeight = 500
     
-
-
+    
     // const clickHandler = useCallback(
     //   (event: React.MouseEvent) => {
     //     console.log("SVG CLICKED ", event);
@@ -305,21 +305,39 @@ const Wrapper = (props: {
       setAddBase(true);
 
     }
+    const [feature, setFeature] = useState(Array.from(features.values()));
+    const feature0 = feature[0];
     //let leftMousePosition = "0px";
     const [leftMousePosition, setLeftMousePosition] = useState('0px');
     const clickHandler = (event: React.MouseEvent) => {
       console.log("click event  ", event);
       const target: any = event.target;
       //leftMousePosition = event.nativeEvent.offsetX+ "px";
-      console.log("leftMousePosition  ",leftMousePosition);
       const dataset = target?.dataset;
       selectedIndex = dataset?.index;
-      console.log("index  :: ", selectedIndex);
+      displayModel.toggleShowEditInput();
+      let [regionleftPx, regionrightPx] = bpSpanPx(
+        region.start,
+        region.end,
+        region,
+        bpPerPx,
+      )
+      let [leftPx, rightPx] = bpSpanPx(
+        feature0.get("start"),
+        feature0.get("end"),
+        region,
+        bpPerPx,
+      )
+      // const w = Math.max((rightPx - leftPx) / len, 0.8)
+      // regionleftPx + index * w
+      displayModel.setEditstartposition(event.nativeEvent.clientX);
+      displayModel.setEditfeatureindex(20);
+      // displayModel.editInputMetaData = {
+      //   startposition: event.nativeEvent.offsetX,
+      //   featureindex: 20
+      // }
       setLeftMousePosition(event.nativeEvent.offsetX+ "px");
     }
-    const [feature, setFeature] = useState(Array.from(features.values()));
-    console.log("feature  ",feature);
-    const feature0 = feature[0];
   
     return (
         <div>
@@ -333,67 +351,59 @@ const [data, setData] = useState('');
 const keyDownEventHandler = (childdata: any, props: any) => {
   let { features, regions, bpPerPx, configTheme, onClick} = props;
   const [qbt, setQbt] = useState('');
-  console.log('childToParent :: ', childdata);
-  console.log("selectedIndex ", selectedIndex);
   const featureValues: any = Array.from(features.values());
-  console.log("featureValues ",featureValues);
   if(childdata[0] !== 0 && selectedIndex > -1 && childdata[0] !== qbt.charAt(selectedIndex)) {
     //let qbtarr = featureValues[0].get("QBT");
     const gappedSeq = featureValues[0].get("gappedSeq");
     const qbtarr = gappedSeq.split("");
-    console.log("QBT ARR ", qbtarr);
     if(childdata[2] !== BaseOperationEnum.NONE) {
       if(childdata[2] === BaseOperationEnum.UPDATE) {
         qbtarr[selectedIndex] = childdata[0];
       } else if(childdata[2] === BaseOperationEnum.DELETE) {
         qbtarr[selectedIndex] = "-";
       } else if(childdata[2] === BaseOperationEnum.ADD) {
-        console.log("ADD OPERATION BEFORE :: ", qbtarr);
         const newselected = ++selectedIndex;
         qbtarr.splice(newselected, 0, childdata[0]);
-        console.log("ADD OPERATION AFTER :: ", qbtarr);
       }
       childdata[2] = BaseOperationEnum.NONE;
-      console.log("QBT ARRAY BEFORE SETTING")
       setQbt(qbtarr.join(""));
     }
-    console.log("FEATURE 0 NEWLY ADDED ", featureValues[0]);
   }
 }
 
 function SequenceRendering(props: any) {
   console.log("SEQUENCE RENDERING ", props);
-  const keydata: any = useKeyDown();
-  console.log("KEY DATA ",props);
-  console.log("keydata  ",keydata);
-  keyDownEventHandler(keydata, props)
+  //const keydata: any = useKeyDown();
+  //keyDownEventHandler(keydata, props)
   let {
+    features,
     regions,
     bpPerPx
   } = props;
   const [region] = regions || [];
   const width = (region.end - region.start) / bpPerPx
   const totalHeight = 200
-  
   return (
     <div >
-      <svg
-        data-testid="sequence_track_New"
-        width={width}
-        height={totalHeight - 100}
-        style={{ width, height: totalHeight - 100}}
-      >
-        <QualityBars {...props}></QualityBars> 
-      </svg>
-      <Wrapper {...props} />
-      <svg
-        data-testid="sequence_track_New"
-        width={width}
-        height={totalHeight}
-        style={{ width, height: totalHeight}}
-      >
-        <Electropherogram {...props}></Electropherogram>
-      </svg>
+      {features?.size ?
+      (  
+      <div><svg
+          data-testid="sequence_track_New"
+          width={width}
+          height={totalHeight - 100}
+          style={{ width, height: totalHeight - 100}}
+        >
+          <QualityBars {...props}></QualityBars> 
+        </svg>
+        <Wrapper {...props} />
+        <svg
+          data-testid="sequence_track_New"
+          width={width}
+          height={totalHeight}
+          style={{ width, height: totalHeight}}
+        >
+          <Electropherogram {...props}></Electropherogram>
+        </svg></div>) : null}
       
     </div>
   )
