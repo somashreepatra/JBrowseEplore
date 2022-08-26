@@ -119,7 +119,7 @@ const defaultSession = {
           "configuration": "e1",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "e1d1",
               showForward: true,
               showReverse: false,
@@ -133,7 +133,7 @@ const defaultSession = {
           "configuration": "e2",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "e2d2",
               showForward: true,
               showReverse: false,
@@ -147,7 +147,7 @@ const defaultSession = {
           "configuration": "e3",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "e3d3",
               showForward: true,
               showReverse: false,
@@ -161,7 +161,7 @@ const defaultSession = {
           "configuration": "e4",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "e4d4",
               showForward: true,
               showReverse: false,
@@ -175,7 +175,7 @@ const defaultSession = {
           "configuration": "e5",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "e5d5",
               showForward: true,
               showReverse: false,
@@ -189,7 +189,7 @@ const defaultSession = {
           "configuration": "e6",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "e6d6",
               showForward: true,
               showReverse: false,
@@ -203,7 +203,7 @@ const defaultSession = {
           "configuration": "e7",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "e7d7",
               showForward: true,
               showReverse: false,
@@ -217,7 +217,7 @@ const defaultSession = {
           "configuration": "e8",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "e8d8",
               showForward: true,
               showReverse: false,
@@ -231,7 +231,7 @@ const defaultSession = {
           "configuration": "e9",
           "displays": [
             {
-              "type": "LinearBasicDisplay",
+              "type": "TraceSequenceDisplay",
               "configuration": "e9d9",
               showForward: true,
               showReverse: false,
