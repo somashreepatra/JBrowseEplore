@@ -62,6 +62,18 @@ const DNA = (props: ISequence) =>{
       {sequencearr.map((letter: string, index: number) => {
         const color = theme.palette.bases[letter.toUpperCase()]
         const x = reverse ? regionrightPx - (index + 1) * w : regionleftPx + index * w
+
+        const featureindexpos = Math.abs(regionstart - start); //regionstart - start > 0 ? regionstart - start : 0;
+        const totalbasesinregion = (regionend - regionstart ) * w;
+       // const currcolumnindex = regionstart - start > 0 ? (regionstart - start) +  : 0;
+       let baseindex =  regionstart - start ;
+       if(regionstart - start > 0) {
+        baseindex = index + regionstart - start;
+       } else {
+        baseindex = index - Math.abs(regionstart - start);
+       }
+        const leftpos = (regionend - regionstart ) * w + index * w; //regionleftPx + index * w;
+        console.log("regionstart - start > 0 ? regionstart - start :", featureindexpos, index, index+featureindexpos, leftpos);
         return (
           <React.Fragment key={index}>
             {
@@ -72,7 +84,7 @@ const DNA = (props: ISequence) =>{
               height={height}
               fill={color ? color.main : '#aaa'}
               stroke={render ? '#555' : 'none'}
-              data-index={index}
+              data-index={baseindex} data-left={leftpos} data-rectwidth={w} data-base={letter}
             />
             ) : null}
             {
@@ -83,7 +95,7 @@ const DNA = (props: ISequence) =>{
                 dominantBaseline="middle"
                 textAnchor="middle"
                 fill={color ? contrastingTextColor(color.main) : 'black'}
-                data-index={index}
+                data-index={baseindex} data-left={leftpos} data-rectwidth={w} data-base={letter}
               >
                 {letter}
               </text>
@@ -97,10 +109,8 @@ const DNA = (props: ISequence) =>{
   )
 }
 
-export const KeyDown = (props: {isAddBase: boolean, OnSvgClick: any, OnSvgDoubleClick: any, leftMousePosition: string, selectedIndex: number, feature: any, regions: any, bpPerPx: number, height: any, theme: any}) => {
-  const {isAddBase, OnSvgClick, OnSvgDoubleClick, leftMousePosition, feature, selectedIndex, regions, bpPerPx, height, theme} = props;
-  
-  console.log("leftMousePosition inside keydown ",leftMousePosition);
+export const KeyDown = (props: {isAddBase: boolean, OnSvgClick: any, OnSvgDoubleClick: any, selectedIndex: number, feature: any, regions: any, bpPerPx: number, height: any, theme: any}) => {
+  const {isAddBase, OnSvgClick, OnSvgDoubleClick, feature, selectedIndex, regions, bpPerPx, height, theme} = props;
   const [region] = regions || [];
   console.log("FEATURE in keydown  ::  ", feature , region);
   const width = (region.end - region.start) / bpPerPx

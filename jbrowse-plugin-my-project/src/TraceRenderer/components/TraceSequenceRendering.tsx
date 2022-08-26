@@ -271,10 +271,6 @@ const Wrapper = (props: {
     const height = 20
     let { features, displayModel, regions, bpPerPx, configTheme, onDblClick} = props;
     const theme = createJBrowseTheme(configTheme)
-    const [region] = regions || [];
-    const width = (region.end - region.start) / bpPerPx
-    const totalHeight = 500
-    
     
     // const clickHandler = useCallback(
     //   (event: React.MouseEvent) => {
@@ -303,45 +299,25 @@ const Wrapper = (props: {
     const svgDoubleClickHandler = (event: React.MouseEvent) => {
       console.log("SVG DOUBLE CLICKED ", event);
       setAddBase(true);
-
     }
-    const [feature, setFeature] = useState(Array.from(features.values()));
+    const feature = Array.from(features.values());
     const feature0 = feature[0];
-    //let leftMousePosition = "0px";
-    const [leftMousePosition, setLeftMousePosition] = useState('0px');
     const clickHandler = (event: React.MouseEvent) => {
       console.log("click event  ", event);
       const target: any = event.target;
-      //leftMousePosition = event.nativeEvent.offsetX+ "px";
       const dataset = target?.dataset;
       selectedIndex = dataset?.index;
       displayModel.toggleShowEditInput();
-      let [regionleftPx, regionrightPx] = bpSpanPx(
-        region.start,
-        region.end,
-        region,
-        bpPerPx,
-      )
-      let [leftPx, rightPx] = bpSpanPx(
-        feature0.get("start"),
-        feature0.get("end"),
-        region,
-        bpPerPx,
-      )
-      // const w = Math.max((rightPx - leftPx) / len, 0.8)
-      // regionleftPx + index * w
-      displayModel.setEditstartposition(event.nativeEvent.clientX);
-      displayModel.setEditfeatureindex(20);
-      // displayModel.editInputMetaData = {
-      //   startposition: event.nativeEvent.offsetX,
-      //   featureindex: 20
-      // }
-      setLeftMousePosition(event.nativeEvent.offsetX+ "px");
+      
+      displayModel.setEditstartposition(dataset?.left+ "px");
+      displayModel.setEditfeatureindex(dataset?.index);
+      displayModel.setEditbasevalue(dataset?.base);
+      displayModel.setEditInputwidth(dataset?.rectwidth+ "px");
     }
   
     return (
         <div>
-            <KeyDown isAddBase={isAddBase} OnSvgClick={clickHandler} OnSvgDoubleClick={svgDoubleClickHandler} leftMousePosition={leftMousePosition} selectedIndex={selectedIndex} feature={feature0} regions={regions} bpPerPx={bpPerPx} height={height} theme={theme} />
+            <KeyDown isAddBase={isAddBase} OnSvgClick={clickHandler} OnSvgDoubleClick={svgDoubleClickHandler} selectedIndex={selectedIndex} feature={feature0} regions={regions} bpPerPx={bpPerPx} height={height} theme={theme} />
         </div>
     )
 }

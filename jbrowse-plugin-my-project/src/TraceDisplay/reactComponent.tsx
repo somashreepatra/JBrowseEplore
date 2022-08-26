@@ -1,10 +1,10 @@
 import { observer, PropTypes as MobxPropTypes } from 'mobx-react'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { TraceTrackModel } from './model';
 import { BaseBlock } from '@jbrowse/core/util/blockTypes';
 import { makeStyles } from 'tss-react/mui'
 import { getConf } from '@jbrowse/core/configuration'
-import { getContainingView } from '@jbrowse/core/util'
+import { Feature, getContainingView } from '@jbrowse/core/util'
 const useStyles = makeStyles()(theme => ({
     display: {
       position: 'relative',
@@ -53,17 +53,22 @@ const TraceDisplay = observer(
   const { classes } = useStyles()
     const ref = useRef<HTMLDivElement>(null)
     
-    const [clientRect, setClientRect] = useState<DOMRect>()
-    const [offsetMouseCoord, setOffsetMouseCoord] = useState<Coord>([0, 0])
-    const [clientMouseCoord, setClientMouseCoord] = useState<Coord>([0, 0])
+    // const [clientRect, setClientRect] = useState<DOMRect>()
+    // const [offsetMouseCoord, setOffsetMouseCoord] = useState<Coord>([0, 0])
+    // const [clientMouseCoord, setClientMouseCoord] = useState<Coord>([0, 0])
     const [contextCoord, setContextCoord] = useState<Coord>()
 
   const { blockDefinitions, blockState, features, showEditInput,  } = model
-  let leftMousePosition;
+  //let leftMousePosition;
   const viewModel: any = getContainingView(model)
-  const editstartposition = model.editstartposition || 0;
-  leftMousePosition =  editstartposition + Math.abs(blockDefinitions.offsetPx - viewModel.offsetPx) - 40;
-  let baseval = "G";
+  const startposition = model.editstartposition ? model.editstartposition : "0px";
+  //const editstartposition = model.editstartposition || 0;
+//   if(model.editstartposition) {
+//     leftMousePosition =  model.editstartposition.toString() + "px" //editstartposition + Math.abs(blockDefinitions.offsetPx - viewModel.offsetPx) - 40;
+//   }
+  
+  const [baseval, setBaseval] = useState("");
+  
   return (
     <div
         ref={ref}
@@ -80,6 +85,9 @@ const TraceDisplay = observer(
           }}
         onClick={event => {
             console.log("Mouse Clicked ", event);
+            if(model.editbasevalue) {
+                setBaseval(model.editbasevalue);
+            }
             //setClientMouseCoord([event.clientX, event.clientY])
         }}
         // onMouseMove={event => {
@@ -102,16 +110,54 @@ const TraceDisplay = observer(
                     {
                         showEditInput ?
                         (<div style={{position:"relative"}}> 
-                            <input name="add_base_ce" title="qualityEditDiv" value={baseval} style={{left: leftMousePosition+"px", position: "absolute", top: "103px",width: "51px",fontFamily: "verdana,sans-serif",fontSize: "15px",border: "0px",outline: "medium none",zIndex:1}} onKeyUp={(event: any) => {
+                            <input name="add_base_ce" title="qualityEditDiv" value={baseval} style={{left: startposition , position: "absolute", top: "103px",width: model.editinputwidth,fontFamily: "verdana,sans-serif",fontSize: "15px",border: "0px",outline: "medium none",zIndex:1}} onChange={(event: any) => { console.log("EVENT ON CHANGE :: ", event); }} onKeyUp={(event: any) => {
             console.log("EVENT KEYUP ", event.key)
                                 event.preventDefault();
+                                let newval = "";
                 if(['a', 't', 'g', 'c' ].includes(event.key?.toLowerCase())) {  // Update a base
-                    console.log("UPDATE");
-                    event.target.value = event.target.value + event.key
+                    newval = baseval + event.key;
+                    console.log("UPDATE ",newval);
+                    setBaseval(newval);
                 } else if(['Backspace'].includes(event.key)) {  // Delete a base
-                    console.log("DELETE");
-                    const newval = event.target.value.slice(0, -1);
-                    event.target.value = newval;
+                    newval = baseval.slice(0, -1);
+                    console.log("DELETE ",newval);
+                    setBaseval(newval);
+                } else if(['Enter'].includes(event.key)) {  // Delete a base
+                    console.log("Update Traces ");
+                    const features = Array.from(model.features.values());
+                    const featureseq = features[0].get("gappedSeq");
+                    console.log("BEFORE ADD SUB STRING ",featureseq);
+                    if(baseval.length > 0) {
+                        let end = 0;
+                        if(model.editfeatureindex) {
+                            end = parseInt(model.editfeatureindex);
+                        }
+                        console.log("ADD END :: ", end);
+                        console.log("FEATURE GAPPEDSEQ BEFORE ADD ", features[0].get("gappedSeq"));
+                        console.log("baseval  ",baseval);
+                        console.log("featureseq.substring(0, end)   ",featureseq.substring(0, end) );
+                        console.log("featureseq.substring(end, featureseq.length)  ",featureseq.substring(end, featureseq.length));
+                        features[0].set("gappedSeq", featureseq.substring(0, end) + baseval + featureseq.substring(end+1, featureseq.length));
+                        console.log("FEATURE GAPPEDSEQ AFTER ADD ", features[0].get("gappedSeq"));
+                    } else {
+                        let start = 0, end = 0;
+                        if(model.editfeatureindex) {
+                            start = parseInt(model.editfeatureindex) ;
+                            end = parseInt(model.editfeatureindex) + 1;
+                        }
+                        console.log("START :: ", start, " :: END :: ", end);
+                        console.log("FEATURE GAPPEDSEQ BEFORE delete ", features[0].get("gappedSeq"));
+                        console.log("baseval  ",baseval);
+
+                        features[0].set("gappedSeq", featureseq.substring(0, start) + baseval + featureseq.substring(end, featureseq.length));
+                        console.log("FEATURE GAPPEDSEQ AFTER delete ", features[0].get("gappedSeq"));
+                    }
+
+                    // TODO: Update features changes at the top level
+
+                    setBaseval("");
+                    model.toggleShowEditInput();
+                    model.reload();
                 } 
                 return true;
             
@@ -121,6 +167,7 @@ const TraceDisplay = observer(
                     <>
                     {blockDefinitions.map(block => {
                         let state = blockState.get(block.key)
+                        console.log("STATE DEFINITIONS  ",state);
                         return (
                             <TraceBlock
                             block={block}

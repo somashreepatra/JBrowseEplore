@@ -83,11 +83,27 @@ import { types, getEnv, Instance } from 'mobx-state-tree'
 import { linearBasicDisplayModelFactory } from '@jbrowse/plugin-linear-genome-view';
 // icons
 import VisibilityIcon from '@mui/icons-material/Visibility'
+import { number } from 'mobx-state-tree/dist/internal';
 
 // locals
 //import BaseDisplay from '@jbrowse/react-linear-genome-view';
 
 //const SetMaxHeightDlg = lazy(() => import('./components/SetMaxHeight'))
+
+// export interface IInputDisplays {
+//   inputTop: string,
+//   inputLeft: string,
+//   inputWidth: string
+// }
+
+// const InputDisplays = types.model({
+//   inputTop: types.string,
+//   inputLeft: types.string,
+//   inputWidth: types.string
+// });
+
+// export type IInputDisplays = Instance<typeof InputDisplays>;
+
 
 const stateModelFactory = (configSchema: AnyConfigurationSchemaType) =>
   types.compose(
@@ -96,8 +112,15 @@ const stateModelFactory = (configSchema: AnyConfigurationSchemaType) =>
       types.model({
         type: types.literal('TraceSequenceDisplay'),
         showEditInput: types.maybe(types.boolean),
-        editstartposition: types.maybe(types.number),
-        editfeatureindex: types.maybe(types.number),
+        editstartposition: types.maybe(types.string),
+        editfeatureindex: types.maybe(types.string),
+        editinputwidth: types.maybe(types.string),
+        editbasevalue: types.maybe(types.string)
+        // types.model({
+        //   inputTop: types.maybe(types.string),
+        //   inputLeft: types.maybe(types.string),
+        //   inputWidth: types.maybe(types.string)
+        // })
         // editInputMetaData: types.maybe(types.model('', {
         //   startposition: types.number,
         //   featureindex: types.number,
@@ -136,12 +159,21 @@ const stateModelFactory = (configSchema: AnyConfigurationSchemaType) =>
         toggleShowEditInput() {
           self.showEditInput = !self.showEditInput
         },
-        setEditstartposition(startposition: number) {
+        setEditstartposition(startposition: string) {
           self.editstartposition = startposition
         },
-        setEditfeatureindex(editfeatureindex: number) {
+        setEditfeatureindex(editfeatureindex: string) {
           self.editfeatureindex = editfeatureindex
+        },
+        setEditbasevalue(basevalue: string) {
+          self.editbasevalue = basevalue
+        },
+        setEditInputwidth(inputwidth: string) {
+          self.editinputwidth = inputwidth
         }
+        // setInputDisplayObject(inputdisplays: IInputDisplays) {
+        //   self.editInputObject = inputdisplays;
+        // }
       }))
       // .views(self => {
       //   const {
