@@ -59,7 +59,8 @@ const DNA = (props: ISequence) =>{
   console.log("regionleftPx  ",regionleftPx, " LEFTPX ",leftPx);
   return (
     <>
-      {sequencearr.map((letter: string, index: number) => {
+      {
+      sequencearr.map((letter: string, index: number) => {
         const color = theme.palette.bases[letter.toUpperCase()]
         const x = reverse ? regionrightPx - (index + 1) * w : regionleftPx + index * w
 
@@ -73,7 +74,7 @@ const DNA = (props: ISequence) =>{
         baseindex = index - Math.abs(regionstart - start);
        }
         const leftpos = (regionend - regionstart ) * w + index * w; //regionleftPx + index * w;
-        console.log("regionstart - start > 0 ? regionstart - start :", featureindexpos, index, index+featureindexpos, leftpos);
+        // console.log("regionstart - start > 0 ? regionstart - start :", featureindexpos, index, index+featureindexpos, leftpos);
         return (
           <React.Fragment key={index}>
             {
@@ -82,19 +83,19 @@ const DNA = (props: ISequence) =>{
               y={y}
               width={w}
               height={height}
-              fill={color ? color.main : '#aaa'}
-              stroke={render ? '#555' : 'none'}
+              fill='transparent'
+              stroke={render ? '#ddd' : 'none'}
               data-index={baseindex} data-left={leftpos} data-rectwidth={w} data-base={letter}
             />
             ) : null}
             {
               letter !== "" && render && (fillstartempty > 0 ) ? (
               <text
-                x={x + w / 2}
+                x={x}
                 y={y + height / 2}
                 dominantBaseline="middle"
                 textAnchor="middle"
-                fill={color ? contrastingTextColor(color.main) : 'black'}
+                fill={color ? color.main : 'black'} font-weight="bold"
                 data-index={baseindex} data-left={leftpos} data-rectwidth={w} data-base={letter}
               >
                 {letter}
@@ -104,7 +105,8 @@ const DNA = (props: ISequence) =>{
             
           </React.Fragment>
         )
-      })}
+      })
+      }
     </>
   )
 }
@@ -136,7 +138,7 @@ export const KeyDown = (props: {isAddBase: boolean, OnSvgClick: any, OnSvgDouble
           </div>) : null
         }*/
         <svg
-              data-testid="sequence_track_New"
+              data-testid="sequence_track_DNA"
               width={width}
               height={totalHeight}
               style={{ width, height: totalHeight}}

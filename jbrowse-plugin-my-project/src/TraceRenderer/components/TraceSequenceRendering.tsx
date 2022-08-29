@@ -139,14 +139,14 @@ const Electropherogram = ({
   const w = Math.max((rightPx - leftPx) / len, 0.8)
   const signaldata = feature.get('signaldata');
   const signala = signaldata[0];// feature.get('Signal_A');
-  const signalt = signaldata[1]; //feature.get('Signal_T');
+  const signalc = signaldata[1]; //feature.get('Signal_T');
   const signalg = signaldata[2]; //feature.get('Signal_G');
-  const signalc = signaldata[3]; //feature.get('Signal_C');
+  const signalt = signaldata[3]; //feature.get('Signal_C');
   let stroke = 'red';
   const label = readConfObject(config, 'label', { feature })
   const caption = readConfObject(config, 'caption', { feature })
   const strokeWidth = readConfObject(config, 'thickness', { feature }) || 1
-  
+
   const [left, right] = bpSpanPx(
     feature.get('start'),
     feature.get('end'),
@@ -154,96 +154,124 @@ const Electropherogram = ({
     bpPerPx,
   )
 
+  const regionstart = region.start || 0
+  const regionend = region.end || 0
+
+  const [regionleftPx, regionrightPx] = bpSpanPx(
+    regionstart,
+    regionend,
+    region,
+    bpPerPx,
+  )
 
   //const qbx = feature.get("QBX");
-  let pathdata: string = ``;
+  let pathdatastr: string = ``;
   let paths = {A: '', T: '', G: '', C: ''};
   const maxa = Math.max(...signala);
   const heightpersignal = (height)/maxa;
   const topY = 150;
-  signala.forEach((val: number, index: number) => {
-    const x = left + index;// * w;
-    if(index === 0) {
-      pathdata +=  `M${left} ${topY - (val * heightpersignal)}`;
-    }
-    // pathdata += `A 2 2 0 1 1 ${x} ${val * heightpersignal}`;
-    pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
-  });
-  paths['A'] = pathdata;
+  const gappedPeakLocation = feature.get("gappedPeakLocation");
+  const gappedarr = gappedPeakLocation.slice(23, 24 + (regionend - regionstart));
 
-  pathdata = '';
-  signalc.forEach((val: number, index: number) => {
-    const x = left + index;// * w;
-    if(index === 0) {
-      pathdata +=  `M${left} ${topY - (val * heightpersignal)}`;
-    }
-    // pathdata += `A 2 2 0 1 1 ${x} ${val * heightpersignal}`;
-    pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
-  });
-  paths['C'] = pathdata;
+  console.log('gappedPeakLocation', regionstart, regionend, feature.get('start'), feature.get('end'), (regionend - regionstart), gappedarr)
+  gappedarr.forEach((base: number, baseIndex: number) => {
+    let pathdata: string = ``;
+    if(baseIndex < gappedarr.length - 1) {
+      const start = base, end = gappedarr[baseIndex + 1];
+      const diff = end - start;
+      const scale = (w/diff);
 
-  pathdata = '';
-  signalg.forEach((val: number, index: number) => {
-    const x = left + index;// * w;
-    if(index === 0) {
-      pathdata +=  `M${left} ${topY - (val * heightpersignal)}`;
+      const adjust = (feature.get('start') - regionstart + 23) * w;
+      const leftpos = regionleftPx + adjust + (w * baseIndex);
+
+      signala.slice(start, end + 1).forEach((val: number, index: number) => {        
+        const x = leftpos + (index * scale);
+        if(index === 0) {
+          pathdata +=  `M${leftpos} ${topY - (val * heightpersignal)}`;
+        }
+        // pathdata += `A 2 2 0 1 1 ${x} ${val * heightpersignal}`;
+        pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
+      });
+      paths['A'] += pathdata;
+
+      pathdata = '';
+      signalt.slice(start, end + 1).forEach((val: number, index: number) => {        
+        const x = leftpos + (index * scale);
+        if(index === 0) {
+          pathdata +=  `M${leftpos} ${topY - (val * heightpersignal)}`;
+        }
+        pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
+      });
+      paths['T'] += pathdata;
+
+      pathdata = '';
+      signalc.slice(start, end + 1).forEach((val: number, index: number) => {        
+        const x = leftpos + (index * scale);
+        if(index === 0) {
+          pathdata +=  `M${leftpos} ${topY - (val * heightpersignal)}`;
+        }
+        pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
+      });
+      paths['C'] += pathdata;
+
+      pathdata = '';
+      signalg.slice(start, end + 1).forEach((val: number, index: number) => {        
+        const x = leftpos + (index * scale);
+        if(index === 0) {
+          pathdata +=  `M${leftpos} ${topY - (val * heightpersignal)}`;
+        }
+        pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
+      });
+      paths['G'] += pathdata;
+
     }
-    // pathdata += `A 2 2 0 1 1 ${x} ${val * heightpersignal}`;
-    pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
+
   });
-  paths['G'] = pathdata;
+  // paths['A'] = pathdatastr;
+  console.log('allpathdata',  paths);
   
-  pathdata = '';
-  signalt.forEach((val: number, index: number) => {
-    const x = left + index;// * w;
-    if(index === 0) {
-      pathdata +=  `M${left} ${topY - (val * heightpersignal)}`;
-    }
-    // pathdata += `A 2 2 0 1 1 ${x} ${val * heightpersignal}`;
-    pathdata += `L ${x} ${topY - (val * heightpersignal)}`;
-  });
-  paths['T'] = pathdata;
-  //ctx.arc(x * scaleX, sampleData[x] * scaleY, 2, 0, 2 * Math.PI, true);
 
   // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
   // arc(x, y, radius, startAngle, endAngle, counterclockwise)
 
+  
   return (
     <>
-      <React.Fragment key={1}>
-            <g data-testid="seq_g">
-              <path data-testid="seq_path_a"
-                d={paths.A}
-                stroke={'green'}
-                strokeWidth={strokeWidth}
-                fill="transparent"
-                pointerEvents="stroke"
-              />
-              <path data-testid="seq_path_t"
-                d={paths.T}
-                stroke={stroke}
-                strokeWidth={strokeWidth}
-                fill="transparent"
-                pointerEvents="stroke"
-              />
-              <path data-testid="seq_path_g"
-                d={paths.G}
-                stroke={'orange'}
-                strokeWidth={strokeWidth}
-                fill="transparent"
-                pointerEvents="stroke"
-              />
-              <path data-testid="seq_path_c"
-                d={paths.C}
-                stroke={'blue'}
-                strokeWidth={strokeWidth}
-                fill="transparent"
-                pointerEvents="stroke"
-              />
-            </g>
-      </React.Fragment>
-    </>
-  )
+    <React.Fragment key={1}>
+          <g data-testid="seq_g">
+            <path data-testid="seq_path_a"
+              d={paths.A}
+              stroke={'green'}
+              strokeWidth={strokeWidth}
+              fill="transparent"
+              pointerEvents="stroke"
+            />
+            <path data-testid="seq_path_t"
+              d={paths.T}
+              stroke={'red'}
+              strokeWidth={strokeWidth}
+              fill="transparent"
+              pointerEvents="stroke"
+            />
+            <path data-testid="seq_path_g"
+              d={paths.G}
+              stroke={'orange'}
+              strokeWidth={strokeWidth}
+              fill="transparent"
+              pointerEvents="stroke"
+            />
+            <path data-testid="seq_path_c"
+              d={paths.C}
+              stroke={'blue'}
+              strokeWidth={strokeWidth}
+              fill="transparent"
+              pointerEvents="stroke"
+            /> 
+          </g>
+    </React.Fragment>
+  </>
+)
+  
 }
 
 const Wrapper = (props: {
@@ -364,7 +392,7 @@ function SequenceRendering(props: any) {
       {features?.size ?
       (  
       <div><svg
-          data-testid="sequence_track_New"
+          data-testid="sequence_track_QB"
           width={width}
           height={totalHeight - 100}
           style={{ width, height: totalHeight - 100}}
@@ -373,7 +401,7 @@ function SequenceRendering(props: any) {
         </svg>
         <Wrapper {...props} />
         <svg
-          data-testid="sequence_track_New"
+          data-testid="sequence_track_EL"
           width={width}
           height={totalHeight}
           style={{ width, height: totalHeight}}
