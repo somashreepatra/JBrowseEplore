@@ -95,7 +95,7 @@ const DNA = (props: ISequence) =>{
                 y={y + height / 2}
                 dominantBaseline="middle"
                 textAnchor="middle"
-                fill={color ? color.main : 'black'} font-weight="bold"
+                fill={color ? color.main : 'black'} fontWeight="bold"
                 data-index={baseindex} data-left={leftpos} data-rectwidth={w} data-base={letter}
               >
                 {letter}

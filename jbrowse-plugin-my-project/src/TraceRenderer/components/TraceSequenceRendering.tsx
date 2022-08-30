@@ -147,33 +147,23 @@ const Electropherogram = ({
   const caption = readConfObject(config, 'caption', { feature })
   const strokeWidth = readConfObject(config, 'thickness', { feature }) || 1
 
-  const [left, right] = bpSpanPx(
-    feature.get('start'),
-    feature.get('end'),
-    region,
-    bpPerPx,
-  )
-
+  
   const regionstart = region.start || 0
   const regionend = region.end || 0
 
-  const [regionleftPx, regionrightPx] = bpSpanPx(
-    regionstart,
-    regionend,
-    region,
-    bpPerPx,
-  )
 
-  //const qbx = feature.get("QBX");
-  let pathdatastr: string = ``;
+  const start = feature.get('start');
+
   let paths = {A: '', T: '', G: '', C: ''};
   const maxa = Math.max(...signala);
   const heightpersignal = (height)/maxa;
   const topY = 150;
-  const gappedPeakLocation = feature.get("gappedPeakLocation");
-  const gappedarr = gappedPeakLocation.slice(23, 24 + (regionend - regionstart));
 
-  console.log('gappedPeakLocation', regionstart, regionend, feature.get('start'), feature.get('end'), (regionend - regionstart), gappedarr)
+  const gappedPeakLocation = feature.get("gappedPeakLocation");
+  const peakStartIndex = Math.abs(regionstart - start); 
+  const gappedarr = gappedPeakLocation.slice(peakStartIndex, peakStartIndex + 1 + (regionend - regionstart));
+
+  //console.log('gappedPeakLocation:', feature.get('name'), regionstart, left, gappedPeakLocation, feature.get('start'), (regionend - regionstart), gappedarr, signaldata)
   gappedarr.forEach((base: number, baseIndex: number) => {
     let pathdata: string = ``;
     if(baseIndex < gappedarr.length - 1) {
@@ -181,10 +171,11 @@ const Electropherogram = ({
       const diff = end - start;
       const scale = (w/diff);
 
-      const adjust = (feature.get('start') - regionstart + 23) * w;
-      const leftpos = regionleftPx + adjust + (w * baseIndex);
-
-      signala.slice(start, end + 1).forEach((val: number, index: number) => {        
+      const adjust = (feature.get('start') - regionstart + peakStartIndex) * w;
+      const leftpos = adjust + (w * baseIndex);
+      // const leftpos = 0;
+      console.log('gappedPeakLocation start end', base, baseIndex, start, end, leftpos, regionstart);
+      signala.slice(start, end + 1).forEach((val: number, index: number) => { 
         const x = leftpos + (index * scale);
         if(index === 0) {
           pathdata +=  `M${leftpos} ${topY - (val * heightpersignal)}`;
@@ -227,9 +218,6 @@ const Electropherogram = ({
     }
 
   });
-  // paths['A'] = pathdatastr;
-  console.log('allpathdata',  paths);
-  
 
   // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
   // arc(x, y, radius, startAngle, endAngle, counterclockwise)
@@ -237,30 +225,30 @@ const Electropherogram = ({
   
   return (
     <>
-    <React.Fragment key={1}>
-          <g data-testid="seq_g">
-            <path data-testid="seq_path_a"
+    <React.Fragment key={regionstart}>
+          <g data-testid={`seq_g_${regionstart}`} transform={`translate(0 0)`}>
+            <path data-testid={`seq_path_a_${regionstart}`}
               d={paths.A}
               stroke={'green'}
               strokeWidth={strokeWidth}
               fill="transparent"
               pointerEvents="stroke"
             />
-            <path data-testid="seq_path_t"
+            <path data-testid={`seq_path_t_${regionstart}`}
               d={paths.T}
               stroke={'red'}
               strokeWidth={strokeWidth}
               fill="transparent"
               pointerEvents="stroke"
             />
-            <path data-testid="seq_path_g"
+            <path data-testid={`seq_path_g_${regionstart}`}
               d={paths.G}
               stroke={'orange'}
               strokeWidth={strokeWidth}
               fill="transparent"
               pointerEvents="stroke"
             />
-            <path data-testid="seq_path_c"
+            <path data-testid={`seq_path_c_${regionstart}`}
               d={paths.C}
               stroke={'blue'}
               strokeWidth={strokeWidth}
