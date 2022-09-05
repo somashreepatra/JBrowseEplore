@@ -1,53 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from 'react'
-import { AnyConfigurationModel } from '@jbrowse/core/configuration/configurationSchema'
-import { contrastingTextColor } from '@jbrowse/core/util/color'
-import { Feature } from '@jbrowse/core/util/simpleFeature'
-import { Region } from '@jbrowse/core/util/types'
 import { createJBrowseTheme } from '@jbrowse/core/ui'
 import { observer } from 'mobx-react'
 
 import {KeyDown} from '../../keydown';
-import { BaseOperationEnum, SequenceProps } from './ITrace'
-import useKeyDown from '../../useKeyDown';
+import { ISequenceProps } from './ITrace'
 import {
-  bpSpanPx,
-  defaultCodonTable,
-  generateCodonTable,
+  bpSpanPx
 } from '@jbrowse/core/util'
 import { readConfObject } from '@jbrowse/core/configuration'
-import { model } from 'mobx-state-tree/dist/internal'
-
-
-//const [selectedIndex, setSelectedIndex] = useState(-1);
-let selectedIndex = -1;
 
 const QualityBars = ({
   regions,
   theme: configTheme,
   features = new Map(),
-  showReverse,
-  showForward,
-  showTranslation,
-  bpPerPx,
-  config
+  bpPerPx
 }: any) => {
 
-// (props: {
-//   theme: any
-//   bpPerPx: number
-//   height: number
-//   region: Region
-//   feature: Feature
-//   y: number
-//   config: any
-// }) {
-
-  //const { bpPerPx, region, feature, theme, height, y, config } = props
   const [region] = regions
-  const theme = createJBrowseTheme(configTheme)
-  const codonTable = generateCodonTable(defaultCodonTable)
-  const height = 20
   const [feature] = [...features.values()]
   if (!feature) {
     return null
@@ -57,103 +27,90 @@ const QualityBars = ({
     return null
   }
   const render = 1 / bpPerPx >= 12
-
+  const start = feature.get('start') || 0;
   const [leftPx, rightPx] = bpSpanPx(
-    feature.get('start'),
+    start,
     feature.get('end'),
     region,
     bpPerPx,
   )
-  const qbd = feature.get('QBD');
-  const len = feature.get('end') - feature.get('start')
+  const regionstart = region.start || 0
+  
+  const peakStartIndex = Math.abs(regionstart - start); 
+  const len = feature.get('end') - start
   const w = Math.max((rightPx - leftPx) / len, 0.8)
+  const adjust = (start - regionstart + peakStartIndex) * w;
+  const qbd = feature.get('QBD');
+  
+  
   const stl = `fill:'blue';stroke:'pink';stroke-width:5;fill-opacity:0.1;stroke-opacity:0.9`;
-
-  // Assume:  Quality bar total height : 100px.
+  const width = (region.end - region.start) / bpPerPx
+  const barHeight = 100
   
   return (
-    <>
-      {
-      qbd.map((qbdval: number, index: number) => {
-        //const color = theme.palette.bases[letter.toUpperCase()]
-        const x = leftPx + index * w;
-        const yval = 100 - qbdval;
-        return (
-          <React.Fragment key={index}>
-            <rect x={x} y={yval} width={w} height={qbdval} fill='blue' style={{fill: 'blue'}} />
-            
-          </React.Fragment>
-        )
-      })}
-    </>
+    <React.Fragment>
+    { 
+      qbd ? 
+        <svg
+            data-testid="sequence_track_QB"
+            width={width}
+            height={barHeight}
+            style={{ width, height: barHeight}}>
+          {
+            qbd?.map((qbdval: number, index: number) => {
+            //const color = theme.palette.bases[letter.toUpperCase()]
+            const x = adjust + (w * index);
+            //const x = leftPx + index * w;
+            const yval = 100 - qbdval;
+            return (
+              <React.Fragment key={index}>
+                <rect x={x} y={yval} width={w} height={qbdval} fill='blue' style={{fill: 'blue'}} />
+              </React.Fragment>
+              )
+            })
+          }
+        </svg> : null }
+    </React.Fragment>
   )
-
-
 }
 
 const Electropherogram = ({
   regions,
   theme: configTheme,
   features = new Map(),
-  showReverse,
-  showForward,
-  showTranslation,
   bpPerPx,
   config
 }: any) => {
 
-// (props: {
-//   theme: any
-//   bpPerPx: number
-//   height: number
-//   region: Region
-//   feature: Feature
-//   y: number
-//   config: any
-// }) {
-
-  //const { bpPerPx, region, feature, theme, height, y, config } = props
-
   const [region] = regions
-  const theme = createJBrowseTheme(configTheme)
-  const codonTable = generateCodonTable(defaultCodonTable)
   const height = 200
   const [feature] = [...features.values()]
-  if (!feature) {
+  if (!feature || ! feature.get('signaldata')) {
     return null
   }
-  const seq: string = feature.get('gappedSeq')
+  const seq: string = feature.get('seq')
   if (!seq) {
     return null
   }
-  const render = 1 / bpPerPx >= 12
-
+  
   const [leftPx, rightPx] = bpSpanPx(
     feature.get('start'),
     feature.get('end'),
     region,
     bpPerPx,
   )
-  const reverse = region.reversed
   const len = feature.get('end') - feature.get('start')
   const w = Math.max((rightPx - leftPx) / len, 0.8)
   const signaldata = feature.get('signaldata');
+  
   const signala = signaldata[0];// feature.get('Signal_A');
   const signalc = signaldata[1]; //feature.get('Signal_T');
   const signalg = signaldata[2]; //feature.get('Signal_G');
   const signalt = signaldata[3]; //feature.get('Signal_C');
-  let stroke = 'red';
-  const label = readConfObject(config, 'label', { feature })
-  const caption = readConfObject(config, 'caption', { feature })
   const strokeWidth = readConfObject(config, 'thickness', { feature }) || 1
-
-  
   const regionstart = region.start || 0
   const regionend = region.end || 0
-
-
   const start = feature.get('start');
-
   let paths = {A: '', T: '', G: '', C: ''};
   const maxa = Math.max(...signala);
   const heightpersignal = (height)/maxa;
@@ -162,8 +119,6 @@ const Electropherogram = ({
   const gappedPeakLocation = feature.get("gappedPeakLocation");
   const peakStartIndex = Math.abs(regionstart - start); 
   const gappedarr = gappedPeakLocation.slice(peakStartIndex, peakStartIndex + 1 + (regionend - regionstart));
-
-  //console.log('gappedPeakLocation:', feature.get('name'), regionstart, left, gappedPeakLocation, feature.get('start'), (regionend - regionstart), gappedarr, signaldata)
   gappedarr.forEach((base: number, baseIndex: number) => {
     let pathdata: string = ``;
     if(baseIndex < gappedarr.length - 1) {
@@ -221,12 +176,13 @@ const Electropherogram = ({
 
   // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
   // arc(x, y, radius, startAngle, endAngle, counterclockwise)
-
+  const width = (region.end - region.start) / bpPerPx;
+  const totalHeight = 200;
   
   return (
-    <>
-    <React.Fragment key={regionstart}>
-          <g data-testid={`seq_g_${regionstart}`} transform={`translate(0 0)`}>
+    <React.Fragment>
+      <svg data-testid="sequence_track_EL" width={width} height={totalHeight} style={{ width, height: totalHeight}}>
+        <g data-testid={`seq_g_${regionstart}`} transform={`translate(0 0)`}>
             <path data-testid={`seq_path_a_${regionstart}`}
               d={paths.A}
               stroke={'green'}
@@ -255,37 +211,14 @@ const Electropherogram = ({
               fill="transparent"
               pointerEvents="stroke"
             /> 
-          </g>
+        </g>
+      </svg>
     </React.Fragment>
-  </>
-)
-  
+  )
 }
 
-const Wrapper = (props: {
-    exportSVG?: boolean,
-    features: Map<string, Feature>
-    regions: Region[]
-    bpPerPx: number
-    config: AnyConfigurationModel
-    configTheme: any
-    displayModel: any
-    showForward: boolean
-    showReverse: boolean
-    showTranslation: boolean,
-    onMouseOut?: React.MouseEventHandler
-    onMouseDown?: React.MouseEventHandler
-    onMouseLeave?: React.MouseEventHandler
-    onMouseEnter?: React.MouseEventHandler
-    onMouseOver?: React.MouseEventHandler
-    onMouseMove?: (event: React.MouseEvent, featureId?: string) => void
-    onMouseUp?: React.MouseEventHandler
-    onClick?: React.MouseEventHandler
-    onDblClick?: React.MouseEventHandler
-  }) => {
-    
-    const height = 20
-    let { features, displayModel, regions, bpPerPx, configTheme, onDblClick} = props;
+const Wrapper = (props: ISequenceProps) => {
+    let { features, displayModel, regions, bpPerPx, configTheme} = props;
     const theme = createJBrowseTheme(configTheme)
     
     // const clickHandler = useCallback(
@@ -301,7 +234,7 @@ const Wrapper = (props: {
     //   [],
     // )
 
-    const [isAddBase, setAddBase] = useState(false);
+    //const [isAddBase, setAddBase] = useState(false);
 
     // const dblClickHandler = useCallback(
     //   (event: React.MouseEvent) => {
@@ -312,17 +245,15 @@ const Wrapper = (props: {
     //   [],
     // )
     
-    const svgDoubleClickHandler = (event: React.MouseEvent) => {
-      console.log("SVG DOUBLE CLICKED ", event);
-      setAddBase(true);
-    }
+    // const svgDoubleClickHandler = (event: React.MouseEvent) => {
+    //   console.log("SVG DOUBLE CLICKED ", event);
+    //   setAddBase(true);
+    // }
     const feature = Array.from(features.values());
-    const feature0 = feature[0];
     const clickHandler = (event: React.MouseEvent) => {
       console.log("click event  ", event);
       const target: any = event.target;
       const dataset = target?.dataset;
-      selectedIndex = dataset?.index;
       displayModel.toggleShowEditInput();
       
       displayModel.setEditstartposition(dataset?.left+ "px");
@@ -332,72 +263,22 @@ const Wrapper = (props: {
     }
   
     return (
-        <div>
-            <KeyDown isAddBase={isAddBase} OnSvgClick={clickHandler} OnSvgDoubleClick={svgDoubleClickHandler} selectedIndex={selectedIndex} feature={feature0} regions={regions} bpPerPx={bpPerPx} height={height} theme={theme} />
-        </div>
+      <KeyDown {...props} />
     )
 }
 
-const [data, setData] = useState('');
-
-const keyDownEventHandler = (childdata: any, props: any) => {
-  let { features, regions, bpPerPx, configTheme, onClick} = props;
-  const [qbt, setQbt] = useState('');
-  const featureValues: any = Array.from(features.values());
-  if(childdata[0] !== 0 && selectedIndex > -1 && childdata[0] !== qbt.charAt(selectedIndex)) {
-    //let qbtarr = featureValues[0].get("QBT");
-    const gappedSeq = featureValues[0].get("gappedSeq");
-    const qbtarr = gappedSeq.split("");
-    if(childdata[2] !== BaseOperationEnum.NONE) {
-      if(childdata[2] === BaseOperationEnum.UPDATE) {
-        qbtarr[selectedIndex] = childdata[0];
-      } else if(childdata[2] === BaseOperationEnum.DELETE) {
-        qbtarr[selectedIndex] = "-";
-      } else if(childdata[2] === BaseOperationEnum.ADD) {
-        const newselected = ++selectedIndex;
-        qbtarr.splice(newselected, 0, childdata[0]);
-      }
-      childdata[2] = BaseOperationEnum.NONE;
-      setQbt(qbtarr.join(""));
-    }
-  }
-}
-
-function SequenceRendering(props: any) {
+function SequenceRendering(props: ISequenceProps) {
   console.log("SEQUENCE RENDERING ", props);
-  //const keydata: any = useKeyDown();
-  //keyDownEventHandler(keydata, props)
-  let {
-    features,
-    regions,
-    bpPerPx
-  } = props;
-  const [region] = regions || [];
-  const width = (region.end - region.start) / bpPerPx
-  const totalHeight = 200
+  let { features } = props;
   return (
-    <div >
+    <React.Fragment>
       {features?.size ?
-      (  
-      <div><svg
-          data-testid="sequence_track_QB"
-          width={width}
-          height={totalHeight - 100}
-          style={{ width, height: totalHeight - 100}}
-        >
-          <QualityBars {...props}></QualityBars> 
-        </svg>
-        <Wrapper {...props} />
-        <svg
-          data-testid="sequence_track_EL"
-          width={width}
-          height={totalHeight}
-          style={{ width, height: totalHeight}}
-        >
-          <Electropherogram {...props}></Electropherogram>
-        </svg></div>) : null}
-      
-    </div>
+      (<React.Fragment>
+        {props.showQualityBars ? <QualityBars {...props}></QualityBars> : null}
+        <Wrapper {...props} />  
+        {props.showElectropherogram ? <Electropherogram {...props}></Electropherogram> : null }
+      </React.Fragment>) : null}
+    </React.Fragment>
   )
 }
 

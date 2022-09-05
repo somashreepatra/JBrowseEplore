@@ -7,7 +7,7 @@ import {
 
 import assembly from './assembly'
 import tracks from './tracks';
-
+import variantonlytracks from './variantonlytracks'
 //import Traces from 'traces-plugin';
 
 const defaultSession2 = {
@@ -24,7 +24,7 @@ const defaultSession2 = {
           {
           //  id: 'pa_7lx6FDh',
             type: 'TraceSequenceDisplay',
-            //height: 210,
+            height: 20,
             configuration: 'GRCh38-ReferenceSequenceTrack-LinearReferenceSequenceDisplay',
             "showTranslation": true,
             "showReverse": false,
@@ -81,6 +81,81 @@ const defaultSession2 = {
           }
         ]
       }
+    ],
+  },
+}
+
+const variantSession = {
+  name: 'this session',
+  view: {
+    id: 'linearGenomeView',
+    type: 'LinearGenomeView',
+    tracks: [
+      {
+        //id: '7PWx6ki1_',
+        type: 'ReferenceSequenceTrack',
+        configuration: 'GRCh38-ReferenceSequenceTrack',
+        displays: [
+          {
+          //  id: 'pa_7lx6FDh',
+            type: 'TraceSequenceDisplay',
+            height: 20,
+            configuration: 'GRCh38-ReferenceSequenceTrack-LinearReferenceSequenceDisplay',
+            "showTranslation": true,
+            "showReverse": false,
+            "showElectropherogram": false,
+            "showQualityBars": false
+          },
+        ],
+      },
+      // {
+      //   //id: 'KHwe41KXk',
+      //   type: 'AlignmentsTrack',
+      //   configuration: 'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome',
+      //   displays: [
+      //     {
+      //    //   id: '_-kwYVczT8',
+      //       type: 'LinearAlignmentsDisplay',
+      //       PileupDisplay: {
+      //         id: '1HTk32IDZJ',
+      //         type: 'LinearPileupDisplay',
+      //         height: 100,
+      //         configuration: {
+      //           type: 'LinearPileupDisplay',
+      //           displayId:
+      //             'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome-LinearAlignmentsDisplay_pileup_xyz',
+      //         },
+      //       },
+      //       SNPCoverageDisplay: {
+      //         id: 'ZBXRXmuDrc',
+      //         type: 'LinearSNPCoverageDisplay',
+      //         height: 45,
+      //         configuration: {
+      //           type: 'LinearSNPCoverageDisplay',
+      //           displayId:
+      //             'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome-LinearAlignmentsDisplay_snpcoverage_xyz',
+      //         },
+      //       },
+      //       configuration:
+      //         'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome-LinearAlignmentsDisplay',
+      //       height: 250,
+      //     },
+      //   ],
+      // },
+      // {
+      //   "type": "FeatureTrack",
+      //   "configuration": "e1",
+      //   "displays": [
+      //     {
+      //       "type": "TraceSequenceDisplay",
+      //       "configuration": "e1d1",
+      //       showForward: true,
+      //       showReverse: false,
+      //       showTranslation: false,
+      //       height: 680,
+      //     }
+      //   ]
+      // }
     ],
   },
 }
@@ -311,6 +386,42 @@ function App() {
       //   },
       // },
     })
+
+    const variantstate = createViewState({
+      assembly,
+      variantonlytracks,
+      //plugins: [HighlightRegionPlugin],
+      plugins: pl,
+      "location": "10:29,838,655..29,838,737",
+      // onChange: (patch) => {
+      //   setPatches((previous) => previous + JSON.stringify(patch) + '\n')
+      // },
+      variantSession,
+      // configuration: {
+      //   theme: {
+      //     palette: {
+      //       primary: {
+      //         main: '#311b92',
+      //       },
+      //       secondary: {
+      //         main: '#0097a7',
+      //       },
+      //       tertiary: {
+      //         main: '#f57c00',
+      //       },
+      //       quaternary: {
+      //         main: '#d50000',
+      //       },
+      //       bases: {
+      //         A: { main: '#98FB98' },
+      //         C: { main: '#87CEEB' },
+      //         G: { main: '#DAA520' },
+      //         T: { main: '#DC143C' },
+      //       },
+      //     },
+      //   },
+      // },
+    })
     
     
     
@@ -320,10 +431,7 @@ function App() {
     return (
       <>
       <JBrowseLinearGenomeView viewState={state} />
-        <h1>
-          HI
-        </h1>
-        Hello
+      <JBrowseLinearGenomeView viewState={variantstate} />
       </>
     );
   // return (
@@ -331,7 +439,7 @@ function App() {
   //     <h1>
   //       JBrowse 2
   //     </h1>
-  //     <JBrowseLinearGenomeView viewState={state} />
+  //     <JBrowseLinearGenomeView viewState={variantstate} />
   //   </>
   // )
 }
