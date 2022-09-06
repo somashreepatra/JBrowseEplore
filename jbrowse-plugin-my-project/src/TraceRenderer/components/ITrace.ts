@@ -2,18 +2,23 @@ import { Feature } from '@jbrowse/core/util/simpleFeature'
 import { Region } from '@jbrowse/core/util/types'
 import { AnyConfigurationModel } from '@jbrowse/core/configuration/configurationSchema'
 
-export interface SequenceProps {
+export interface ISequenceProps {
     exportSVG?: boolean
     features: Map<string, Feature>
+    currentFeature: Feature
     regions: Region[]
     bpPerPx: number
     config: AnyConfigurationModel
     highResolutionScaling: number
     configTheme: any
     keydata: any
+    showEditInput: boolean
     showForward: boolean
     showReverse: boolean
     showTranslation: boolean,
+    showElectropherogram: boolean
+    showQualityBars: boolean
+    displayModel: any
     onMouseOut?: React.MouseEventHandler
     onMouseDown?: React.MouseEventHandler
     onMouseLeave?: React.MouseEventHandler
