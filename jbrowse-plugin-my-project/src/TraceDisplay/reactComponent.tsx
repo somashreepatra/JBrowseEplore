@@ -68,7 +68,10 @@ const TraceDisplay = observer(
 //   }
   
   const [baseval, setBaseval] = useState("");
-  
+  let cont = document.getElementById("trackRenderingContainer-linearGenomeView-e1");
+  if(cont){
+    cont.style.height = "1000px";
+  }
   return (
     <div
         ref={ref}
@@ -167,7 +170,6 @@ const TraceDisplay = observer(
                     <>
                     {blockDefinitions.map(block => {
                         let state = blockState.get(block.key)
-                        console.log("STATE DEFINITIONS  ",state);
                         return (
                             <TraceBlock
                             block={block}

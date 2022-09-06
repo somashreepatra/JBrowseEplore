@@ -73,12 +73,14 @@ export default class TracesAdapter extends BaseFeatureDataAdapter {
     const { refName, start, end } = region
 
     return ObservableCreate<Feature>(async observer => {
-      const features = this.features.get(refName) || []
-      for (let i = 0; i < features.length; i++) {
-        const f = features[i]
-
-        if (f.get('end') > start && f.get('start') < end) {
-          observer.next(f)
+      const features: Map<string, Feature[]> = this.features; //this.features.get(refName) || []
+      //for (let i = 0; i < features.length; i++) {
+      for (let [key, featuresArr] of features) {
+       // const fs = features.get(key);
+        for(let f of featuresArr) {
+          if (f.get('end') > start && f.get('start') < end) {
+            observer.next(f)
+          }
         }
       }
       
