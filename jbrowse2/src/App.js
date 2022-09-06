@@ -92,12 +92,12 @@ const variantSession = {
     type: 'LinearGenomeView',
     tracks: [
       {
-        //id: '7PWx6ki1_',
+        id: '7VAx6ki1_',
         type: 'ReferenceSequenceTrack',
         configuration: 'GRCh38-ReferenceSequenceTrack',
         displays: [
           {
-          //  id: 'pa_7lx6FDh',
+            id: 'va_7lx6FDh',
             type: 'TraceSequenceDisplay',
             height: 20,
             configuration: 'GRCh38-ReferenceSequenceTrack-LinearReferenceSequenceDisplay',
@@ -108,40 +108,40 @@ const variantSession = {
           },
         ],
       },
-      // {
-      //   //id: 'KHwe41KXk',
-      //   type: 'AlignmentsTrack',
-      //   configuration: 'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome',
-      //   displays: [
-      //     {
-      //    //   id: '_-kwYVczT8',
-      //       type: 'LinearAlignmentsDisplay',
-      //       PileupDisplay: {
-      //         id: '1HTk32IDZJ',
-      //         type: 'LinearPileupDisplay',
-      //         height: 100,
-      //         configuration: {
-      //           type: 'LinearPileupDisplay',
-      //           displayId:
-      //             'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome-LinearAlignmentsDisplay_pileup_xyz',
-      //         },
-      //       },
-      //       SNPCoverageDisplay: {
-      //         id: 'ZBXRXmuDrc',
-      //         type: 'LinearSNPCoverageDisplay',
-      //         height: 45,
-      //         configuration: {
-      //           type: 'LinearSNPCoverageDisplay',
-      //           displayId:
-      //             'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome-LinearAlignmentsDisplay_snpcoverage_xyz',
-      //         },
-      //       },
-      //       configuration:
-      //         'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome-LinearAlignmentsDisplay',
-      //       height: 250,
-      //     },
-      //   ],
-      // },
+      {
+        id: 'VAwe41KXk',
+        type: 'AlignmentsTrack',
+        configuration: 'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome',
+        displays: [
+          {
+            id: '_-kwVAczT8',
+            type: 'LinearAlignmentsDisplay',
+            PileupDisplay: {
+              id: '1HTk32IDZJ',
+              type: 'LinearPileupDisplay',
+              height: 100,
+              configuration: {
+                type: 'LinearPileupDisplay',
+                displayId:
+                  'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome-LinearAlignmentsDisplay_pileup_xyz',
+              },
+            },
+            SNPCoverageDisplay: {
+              id: 'ZBXVAmuDrc',
+              type: 'LinearSNPCoverageDisplay',
+              height: 45,
+              configuration: {
+                type: 'LinearSNPCoverageDisplay',
+                displayId:
+                  'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome-LinearAlignmentsDisplay_snpcoverage_xyz',
+              },
+            },
+            configuration:
+              'NA12878.alt_bwamem_GRCh38DH.20150826.CEU.exome-LinearAlignmentsDisplay',
+            height: 250,
+          },
+        ],
+      },
       // {
       //   "type": "FeatureTrack",
       //   "configuration": "e1",
@@ -389,10 +389,10 @@ function App() {
 
     const variantstate = createViewState({
       assembly,
-      variantonlytracks,
+      tracks,
       //plugins: [HighlightRegionPlugin],
       plugins: pl,
-      "location": "10:29,838,655..29,838,737",
+      "location": "10:29,831,737..29,839,737",
       // onChange: (patch) => {
       //   setPatches((previous) => previous + JSON.stringify(patch) + '\n')
       // },
@@ -424,14 +424,13 @@ function App() {
     })
     
     
-    
     //setViewState(state)
 
  
     return (
       <>
-      <JBrowseLinearGenomeView viewState={state} />
-      <JBrowseLinearGenomeView viewState={variantstate} />
+        <JBrowseLinearGenomeView viewState={variantstate} />
+        <JBrowseLinearGenomeView viewState={state} />
       </>
     );
   // return (

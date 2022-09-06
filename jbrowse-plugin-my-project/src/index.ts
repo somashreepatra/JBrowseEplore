@@ -94,7 +94,13 @@ import {
 // } from '@jbrowse/core/util/tracks'
 
 import ReactComponent from './TraceDisplay/reactComponent';
-
+import WidgetType from "@jbrowse/core/pluggableElementTypes/WidgetType";
+import {
+  configSchema as traceFeatureWidgetConfigSchema,
+  stateModelFactory as traceFeatureWidgetStateModelFactory,
+} from './TraceFeatureWidget'
+import TraceFeatureWidget from "./TraceFeatureWidget/TraceFeatureWidget";
+import ViewType from "@jbrowse/core/pluggableElementTypes/ViewType";
 //import { BaseLinearDisplayComponent } from '@jbrowse/plugin-linear-genome-view'
 
 class TraceSequenceRenderer extends FeatureRendererType {
@@ -168,6 +174,57 @@ export default class TracesPlugin extends Plugin {
         ReactComponent: ReactComponent//BaseLinearDisplayComponent,
       })
     })
+
+    pluginManager.addWidgetType(
+      () =>
+        new WidgetType({
+          name: 'TraceFeatureWidget',
+          heading: 'Feature details',
+          configSchema: traceFeatureWidgetConfigSchema,
+          stateModel: traceFeatureWidgetStateModelFactory(pluginManager),
+        
+          ReactComponent: TraceFeatureWidget
+        }),
+    )
+
+    pluginManager.addToExtensionPoint(
+      'Core-extendPluggableElement',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (pluggableElement: any) => {
+        if (pluggableElement.name === 'LinearGenomeView') {
+          const { stateModel } = pluggableElement as ViewType
+          const newStateModel = stateModel.extend(self => {
+            const superRubberBandMenuItems = self.rubberBandMenuItems
+            console.log("addToExtensionPoint   ",self);
+            return {
+              views: {
+                // rubberBandMenuItems() {
+                //   return [
+                //     ...superRubberBandMenuItems(),
+                //     {
+                //       label: 'Console log selected region',
+                //       onClick: () => {
+                //         const { leftOffset, rightOffset } = self
+                //         const selectedRegions = self.getSelectedRegions(
+                //           leftOffset,
+                //           rightOffset,
+                //         )
+                //         // console log the list of potentially multiple
+                //         // regions that were selected
+                //         console.log(selectedRegions)
+                //       },
+                //     },
+                //   ]
+                // },
+              },
+            }
+          })
+
+          pluggableElement.stateModel = newStateModel
+        }
+        return pluggableElement
+      },
+    )
     
   }
 }

@@ -6,19 +6,15 @@ import { observer } from 'mobx-react'
 import {KeyDown} from '../../keydown';
 import { ISequenceProps } from './ITrace'
 import {
-  bpSpanPx
+  bpSpanPx, Feature
 } from '@jbrowse/core/util'
 import { readConfObject } from '@jbrowse/core/configuration'
 
-const QualityBars = ({
-  regions,
-  theme: configTheme,
-  features = new Map(),
-  bpPerPx
-}: any) => {
-
+const QualityBars = (props: ISequenceProps) => {
+  let { features, displayModel, regions, bpPerPx, configTheme} = props;
   const [region] = regions
-  const [feature] = [...features.values()]
+  //const [feature] = [...features.values()]
+  const feature = props.currentFeature;
   if (!feature) {
     return null
   }
@@ -41,7 +37,7 @@ const QualityBars = ({
   const w = Math.max((rightPx - leftPx) / len, 0.8)
   const adjust = (start - regionstart + peakStartIndex) * w;
   const qbd = feature.get('QBD');
-  
+  console.log("FEATURE NAME ", feature.get("name"), " QBD VALUE ", qbd);
   
   const stl = `fill:'blue';stroke:'pink';stroke-width:5;fill-opacity:0.1;stroke-opacity:0.9`;
   const width = (region.end - region.start) / bpPerPx
@@ -74,17 +70,12 @@ const QualityBars = ({
   )
 }
 
-const Electropherogram = ({
-  regions,
-  theme: configTheme,
-  features = new Map(),
-  bpPerPx,
-  config
-}: any) => {
-
+const Electropherogram = (props: ISequenceProps) => {
+  let { features, config, regions, bpPerPx, configTheme} = props;
   const [region] = regions
   const height = 200
-  const [feature] = [...features.values()]
+  //const [feature] = [...features.values()]
+  const feature = props.currentFeature;
   if (!feature || ! feature.get('signaldata')) {
     return null
   }
@@ -218,8 +209,8 @@ const Electropherogram = ({
 }
 
 const Wrapper = (props: ISequenceProps) => {
-    let { features, displayModel, regions, bpPerPx, configTheme} = props;
-    const theme = createJBrowseTheme(configTheme)
+    let { displayModel } = props;
+    const theme = createJBrowseTheme(props.configTheme)
     
     // const clickHandler = useCallback(
     //   (event: React.MouseEvent) => {
@@ -249,7 +240,8 @@ const Wrapper = (props: ISequenceProps) => {
     //   console.log("SVG DOUBLE CLICKED ", event);
     //   setAddBase(true);
     // }
-    const feature = Array.from(features.values());
+    //const feature = Array.from(features.values());
+    
     const clickHandler = (event: React.MouseEvent) => {
       console.log("click event  ", event);
       const target: any = event.target;
@@ -263,23 +255,30 @@ const Wrapper = (props: ISequenceProps) => {
     }
   
     return (
-      <KeyDown {...props} />
+      <KeyDown props={props} OnSvgClick={clickHandler} />
     )
 }
 
 function SequenceRendering(props: ISequenceProps) {
   console.log("SEQUENCE RENDERING ", props);
   let { features } = props;
+  const featuresarr = Array.from(features.values());
+  let newprops = {...props};
   return (
-    <React.Fragment>
-      {features?.size ?
-      (<React.Fragment>
-        {props.showQualityBars ? <QualityBars {...props}></QualityBars> : null}
-        <Wrapper {...props} />  
-        {props.showElectropherogram ? <Electropherogram {...props}></Electropherogram> : null }
-      </React.Fragment>) : null}
-    </React.Fragment>
-  )
+        <>
+          {
+          featuresarr?.map((feature: Feature, index: number) => {
+            newprops.currentFeature = feature
+              return (
+                  <React.Fragment key={index}>
+                    {props.showQualityBars ? <QualityBars {...newprops}></QualityBars> : null}
+                    <Wrapper {...newprops}/>  
+                    {props.showElectropherogram ? <Electropherogram {...newprops}></Electropherogram> : null }
+                  </React.Fragment>
+                )
+              })
+            }
+        </>)
 }
 
 export default observer(SequenceRendering)
