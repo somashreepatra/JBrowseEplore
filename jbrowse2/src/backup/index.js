@@ -7,8 +7,7 @@ import App from './App';
 import {
   createViewState,
   JBrowseLinearGenomeView,
-  loadPlugins,
-  LinearGenomeViewModel
+  loadPlugins
 } from '@jbrowse/react-linear-genome-view'
 
 import assembly from './assembly'
